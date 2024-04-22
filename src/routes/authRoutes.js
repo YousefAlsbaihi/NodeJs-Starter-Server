@@ -218,7 +218,7 @@ router.put('/update', async (req, res) => {
             const existingUser = await User.findOne({ email: email });
 
             if (existingUser) {
-                return res.status(400).json({ success: false, code: 113, message: 'Email is already taken' });
+                return res.status(400).json({ success: false, code: 113, message: 'Email is already taken by another user' });
             }
 
             user.email = email;
@@ -244,8 +244,18 @@ router.put('/update', async (req, res) => {
 
 
         await user.save();
+        const newToken = generateToken(user);
 
-        res.json({ success: false, code: 203, message: 'User details updated successfully', user: { name: user.name, email: user.email, profile_picture: user.profile_picture } });
+        res.json({
+            success: true,
+            code: 203,
+            token: newToken,
+            user: {
+                name: user.name,
+                email: user.email,
+                profile_picture: user.profile_picture
+            },
+        });
     } catch (error) {
         res.status(400).json({ success: false, code: 112, message: 'Error updating user details', error: error.message });
     }
