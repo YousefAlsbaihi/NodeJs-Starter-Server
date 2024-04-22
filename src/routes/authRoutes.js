@@ -236,7 +236,7 @@ router.put('/update', async (req, res) => {
 
                 fs.writeFileSync(imagePath, base64Image, { encoding: 'base64' });
 
-                picture = `/uploads/profile_pictures/${path.basename(imagePath)}`;
+                user.profile_picture = `/uploads/profile_pictures/${path.basename(imagePath)}`;
             } catch (error) {
                 return res.status(400).json({ success: false, code: 111, message: 'Error saving profile picture', error: error.message });
             }
