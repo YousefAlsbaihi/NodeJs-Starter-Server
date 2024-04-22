@@ -44,7 +44,7 @@ curl -X POST \
     "profile_picture": "data:image/png;base64,iVBORw0KGgoAAAA"
   }'
 ```
-| Code  | Message | Success  | Route |
+| Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
 | 101  | false  | Not Valid Email Address  | /auth/register  |
 | 102  | false  | Password doesn’t meet the minimum required characters count  | /auth/register  |
@@ -66,7 +66,7 @@ curl -X POST \
     "password": "12345"
   }'
 ```
-| Code  | Message | Success  | Route |
+| Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
 | 106  | false  | Invalid Credentials / Wrong email or password  | /auth/login  |
 | 107  | false  | Error loginin in, see console for error details  | /auth/login  |
@@ -87,7 +87,7 @@ curl -X PUT \
     "profile_picture": "data:image/png;base64,iVBORw0KGgoAAAA"
   }'
 ```
-| Code  | Message | Success  | Route |
+| Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
 | 108  | false  | Token is not provided  | /auth/update  |
 | 109  | false  | Token provided is not valid  | /auth/update  |
