@@ -213,17 +213,20 @@ router.put('/update', async (req, res) => {
         if (name) {
             user.name = name;
         }
-        if (email) {
+        if (email && email !== user.email) {
+            // Check if the email already exists in the database
+            const existingUser = await User.findOne({ email: email });
+
+            if (existingUser) {
+                return res.status(400).json({ success: false, code: 113, message: 'Email is already taken' });
+            }
+
             user.email = email;
         }
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10);
             user.password = hashedPassword;
         }
-
-
-
-
 
         if (profile_picture) {
             try {
