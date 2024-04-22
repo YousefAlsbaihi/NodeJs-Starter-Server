@@ -3,11 +3,12 @@ NodeJs starter server
 
 # Project Title
 
-NodeJs server with Users functionalities
+NodeJs server with Users functionalities using MongoDB
 
 ## About The Project
 
-NodeJs server with Users functionalities Signup, Login, Update
+NodeJs server with Users functionalities **Signup**, **Login**, **Update** and connected to MongoDB as database and JWT token authentication
+very simple code and easy to read, use and extend.
 
 ### Built With
 
@@ -112,3 +113,11 @@ cd NodeJs-Starter-Server
 
 # Install dependencies
 npm install
+
+# Create .env file
+Rename the file "env.sample" to ".env" and add MongoDB url and configure it.
+
+# Run The Server
+npm start
+
+App has nodemon installed so any changes to the files will be auto refreshed to the server
