@@ -89,6 +89,7 @@ curl -X PUT \
 | 109  | false  | Token provided is not valid  | /auth/update  |
 | 110  | false  | User not found based on the token provided  | /auth/update |
 | 111  | false  | Error saving profile picture for user update details  | /auth/update |
+| 113  | false  | Email is already taken by another user | /auth/update |
 | 112  | false  | Error updating user details, see console for error details  | /auth/update |
 | 203  | true  | User details updated successfully  | /auth/update |
 
