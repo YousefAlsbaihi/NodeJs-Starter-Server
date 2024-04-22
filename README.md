@@ -1,10 +1,6 @@
 # NodeJs Starter Server
 This NodeJs starter server has all the basic functions for users to start and security implemented using JWT and password hashed using bcryptjs
 
-# Project Title
-
-NodeJs server with Users functionalities using MongoDB
-
 ## About The Project
 
 NodeJs server with Users functionalities **Signup**, **Login**, **Update** and connected to MongoDB as database and JWT token authentication
