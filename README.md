@@ -1,5 +1,5 @@
-# NodeJs-Starter-Server
-NodeJs starter server
+# NodeJs Starter Server
+This NodeJs starter server has all the basic functions for users to start and security implemented using JWT and password hashed using bcryptjs
 
 # Project Title
 
