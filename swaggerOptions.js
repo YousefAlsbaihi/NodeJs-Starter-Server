@@ -4,7 +4,7 @@ const swaggerOptions = {
         info: {
             title: 'Backend Server Starter App',
             version: '1.0.0 - BETA',
-            description: 'Documentation for BSSA',
+            description: 'Documentation for Stand alone Nodejs starter',
         },
         servers: [
             {
@@ -13,30 +13,6 @@ const swaggerOptions = {
         ],
         components: {
             schemas: {
-                Signup: {
-                    type: 'object',
-                    required: ['name', 'email', 'password'],
-                    properties: {
-                        name: {
-                            type: 'string',
-                            description: 'User name',
-                        },
-                        email: {
-                            type: 'string',
-                            format: 'email',
-                            description: 'User email',
-                        },
-                        password: {
-                            type: 'string',
-                            description: 'User password',
-                        },
-                        profile_picture: {
-                            type: 'string',
-                            description: 'Base64 encoded image string of the user profile picture',
-                        },
-                    },
-                },
-
                 Login: {
                     type: 'object',
                     required: ['email', 'password'],
@@ -52,14 +28,32 @@ const swaggerOptions = {
                         },
                     },
                 },
-
-                Update: {
+                Signup: {
                     type: 'object',
-                    required: [],
+                    required: ['name', 'email', 'password'],
                     properties: {
                         name: {
                             type: 'string',
-                            description: 'User name',
+                            description: 'User Full Name',
+                        },
+                        email: {
+                            type: 'string',
+                            format: 'email',
+                            description: 'User email',
+                        },
+                        password: {
+                            type: 'string',
+                            description: 'User password',
+                        },
+                    },
+                },
+                Update_account: {
+                    type: 'object',
+                    required: ['name', 'email'],
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'User Full Name',
                         },
                         email: {
                             type: 'string',
@@ -72,11 +66,96 @@ const swaggerOptions = {
                         },
                         profile_picture: {
                             type: 'string',
-                            description: 'Base64 encoded image string of the user profile picture',
+                            format: 'binary',
+                            description: 'Profile picture file upload',
                         },
                     },
                 },
-
+                get_users: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'string' },
+                        createdAt: { type: 'string', format: 'date-time' },
+                        updatedAt: { type: 'string', format: 'date-time' },
+                    },
+                },
+                Update_account_mod: {
+                    type: 'object',
+                    required: ['name', 'email'],
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'User Full Name',
+                        },
+                        email: {
+                            type: 'string',
+                            format: 'email',
+                            description: 'User email',
+                        },
+                        password: {
+                            type: 'string',
+                            description: 'User password',
+                        },
+                        profile_picture: {
+                            type: 'string',
+                            format: 'binary',
+                            description: 'Profile picture file upload',
+                        },
+                        permissions: {
+                            type: 'array',
+                            description: 'Array of permissions for the user',
+                            items: {
+                                type: 'string',
+                            },
+                            example: ['update_profile', 'mod_all_users', 'mod_update_users', 'mod_create_users', 'mod_ban_users'],
+                        },
+                    },
+                },
+                Create_account_mod: {
+                    type: 'object',
+                    required: ['name', 'email'],
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'User Full Name',
+                        },
+                        email: {
+                            type: 'string',
+                            format: 'email',
+                            description: 'User email',
+                        },
+                        password: {
+                            type: 'string',
+                            description: 'User password',
+                        },
+                        file: {
+                            type: 'string',
+                            format: 'binary',
+                            description: 'Profile picture file upload',
+                        },
+                        permissions: {
+                            type: 'array',
+                            description: 'Array of permissions for the user',
+                            items: {
+                                type: 'string',
+                            },
+                            example: ['update_profile', 'mod_all_users', 'mod_update_users', 'mod_create_users', 'mod_ban_users'],
+                        },
+                    },
+                },
+                Ban_unban_user: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'string' },
+                    },
+                }
+            },
+            securitySchemes: { // Define security scheme for bearer token
+                BearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
             },
             responses: {
                 BadRequest: {
