@@ -1,18 +1,34 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { verifyToken, generateToken, comparePasswords, isValidEmail, isValidPassword, isValidUsername } = require('../utils/auth');
+const { verifyToken, generateToken, comparePasswords, isValidEmail, isValidPassword } = require('../utils/auth');
 const fs = require('fs');
 const path = require('path');
 const User = require('../models/User');
+const hasPermission = require('../utils/hasPermission');
 require('dotenv').config();
 const router = express.Router();
+
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'src/uploads/profile_pictures'); // Specify the directory for uploads
+    },
+    filename: function (req, file, cb) {
+        const extension = path.extname(file.originalname);
+        const name = (Date.now() + "-" + Math.round(Math.random() * 1e9))
+        cb(null, name + extension); // Use the original filename with extension
+    }
+});
+
+const upload = multer({ storage: storage });
+
 
 
 /**
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Register a new user
+ *     summary: Signup user
  *     tags:
  *       - Authentication
  *     requestBody:
@@ -22,14 +38,11 @@ const router = express.Router();
  *           schema:
  *             $ref: '#/components/schemas/Signup'
  *     responses:
- *       201:
- *         description: User registered successfully
+ *       200:
+ *         description: Operation successful
  *       400:
- *         description: Bad request, validation failed or email already in use
- *       500:
- *         description: Internal server error
+ *         description: Bad request, error Signing Up
  */
-
 
 
 // Data Example
@@ -37,7 +50,7 @@ const router = express.Router();
 //     "email":"email@1example.com",
 //     "password": "123456",
 //     "name": "John Doe",
-//     "profile_picture": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII="
+//     "profile_picture": "data:image/png;base64,iVBORw0KGgo..."
 // }
 
 
@@ -89,12 +102,12 @@ router.post('/register', async (req, res) => {
             name,
             password: hashedPassword,
             email,
-            profile_picture: picture
+            profile_picture: picture,
+            permissions: 'update_profile'
         });
 
         await user.save();
-
-        res.status(201).json({ success: true, code: 201, message: 'User registered successfully' });
+        res.status(200).json({ success: true, code: 201, message: 'User registered successfully' });
     } catch (error) {
         res.status(400).json({ success: false, code: 105, message: 'Error registering user', error: error.message });
     }
@@ -117,7 +130,7 @@ router.post('/register', async (req, res) => {
  *             $ref: '#/components/schemas/Login'
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Operation successful
  *       401:
  *         description: Unauthorized, invalid credentials
  *       400:
@@ -139,16 +152,14 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ success: false, code: 106, message: 'Invalid credentials' });
         }
 
+        const { password: userPassword, ...userWithoutPassword } = user.toObject();
+
         const token = generateToken(user);
-        res.json({
+        res.status(200).json({
             success: true,
             code: 202,
             token,
-            user: {
-                name: user.name,
-                email: email,
-                profile_picture: user.profile_picture
-            },
+            user: userWithoutPassword,
         });
     } catch (error) {
         res.status(400).json({ success: false, code: 107, message: 'Error logging in', error: error.message });
@@ -156,29 +167,30 @@ router.post('/login', async (req, res) => {
 });
 
 
-
-
-
 /**
  * @swagger
  * /auth/update:
  *   put:
- *     summary: Update user
+ *     summary: Update user account
  *     tags:
  *       - Authentication
+ *     security: 
+ *        [{ BearerAuth: []}]
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Update'
+ *             $ref: '#/components/schemas/Update_account'
  *     responses:
  *       200:
- *         description: Update successful
- *       401:
- *         description: Unauthorized, invalid credentials
+ *         description: Operation successful
+ *       403:
+ *         description: Forbidden, Not enough permission to perform operation
  *       400:
- *         description: Bad request, error logging in
+ *         description: Bad request, error updating
+ *       401:
+ *         description: Token not provided
  */
 
 // Data example
@@ -186,75 +198,66 @@ router.post('/login', async (req, res) => {
 //     "email":"email@example.com",
 //     "password": "123456",
 //     "name": "John Doe",
-//     "profile_picture": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII="
+//     "profile_picture": "data:image/png;base64,iVBORw0KGgo..."
 // }
 
-router.put('/update', async (req, res) => {
+router.put('/update', hasPermission('update_profile'), async (req, res) => {
     try {
-        const token = req.headers.authorization?.split(' ')[1]; // Extract JWT token from Authorization header
-        if (!token) {
-            return res.status(401).json({ success: false, code: 108, message: 'No token provided' });
-        }
+        upload.single('file')(req, res, async () => {
+            const { user } = req; // Get user object directly from the request
+            const { name, email, password, profile_picture } = req.body;
+            // Update user details
+            if (name) {
+                user.name = name;
+            }
+            if (email && email !== user.email) {
+                // Check if the email already exists in the database
+                const existingUser = await User.findOne({ email: email });
 
-        const decoded = verifyToken(token); // Verify and decode JWT token
-        if (!decoded) {
-            return res.status(401).json({ success: false, code: 109, message: 'Invalid token' });
-        }
+                if (existingUser) {
+                    return res.status(400).json({ success: false, code: 113, message: 'Email is already taken by another user' });
+                }
 
-        const { id } = decoded; // Extract user ID from decoded token
-        const user = await User.findById(id);
-
-        if (!user) {
-            return res.status(404).json({ success: false, code: 110, message: 'User not found' });
-        }
-        const { name, email, password, profile_picture } = req.body;
-
-        // Update user details
-        if (name) {
-            user.name = name;
-        }
-        if (email && email !== user.email) {
-            // Check if the email already exists in the database
-            const existingUser = await User.findOne({ email: email });
-
-            if (existingUser) {
-                return res.status(400).json({ success: false, code: 113, message: 'Email is already taken by another user' });
+                user.email = email;
             }
 
-            user.email = email;
-        }
-        if (password) {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            user.password = hashedPassword;
-        }
 
-        if (profile_picture) {
-            try {
-                // Decode Base64 image string
-                const base64Image = profile_picture.split(';base64,').pop();
-                const imagePath = path.join(__dirname, '..', 'uploads', 'profile_pictures', `${Date.now()}-${Math.round(Math.random() * 1e9)}.png`);
-
-                fs.writeFileSync(imagePath, base64Image, { encoding: 'base64' });
-
-                user.profile_picture = `/uploads/profile_pictures/${path.basename(imagePath)}`;
-            } catch (error) {
-                return res.status(400).json({ success: false, code: 111, message: 'Error saving profile picture', error: error.message });
+            if (password && !isValidPassword(password)) {
+                return res.status(400).json({ success: false, code: 102, message: 'Password must be at least ' + process.env.MIN_PASSWORD + ' or more characters' });
             }
-        }
+
+            if (password && isValidPassword(password)) {
+                const hashedPassword = await bcrypt.hash(password, 10);
+                user.password = hashedPassword;
+            }
+
+            // Check if profile_picture is uploaded
+            if (req.file) {
+                if (user.profile_picture) {
+                    // Construct the file path
+                    const filePath = path.join(__dirname, '..', user.profile_picture);
+
+                    // Check if the file exists, then delete it
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                }
+
+                user.profile_picture = "/uploads/profile_pictures/" + req.file.filename;
+            }
 
 
-        await user.save();
-        const newToken = generateToken(user);
+            await user.save();
+            const newToken = generateToken(user);
+            // Exclude password from user object
+            const { password: _, ...userWithoutPassword } = user.toObject();
 
-        res.json({
-            success: true,
-            code: 203,
-            token: newToken,
-            user: {
-                name: user.name,
-                email: user.email,
-                profile_picture: user.profile_picture
-            },
+            res.status(200).json({
+                success: true,
+                code: 203,
+                token: newToken,
+                user: userWithoutPassword,
+            });
         });
     } catch (error) {
         res.status(400).json({ success: false, code: 112, message: 'Error updating user details', error: error.message });
