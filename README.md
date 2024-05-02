@@ -82,6 +82,7 @@ curl -X POST \
 | ------------- | ------------- | ------------- | ------------- |
 | 106  | false  | Invalid Credentials / Wrong email or password  | /auth/login  |
 | 107  | false  | Error loginin in, see console for error details  | /auth/login  |
+| 115  | false  | Account us banned  | /auth/login  |
 | 202  | true  | Login success  | /auth/login |
 
 
