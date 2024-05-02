@@ -151,6 +151,10 @@ router.post('/login', async (req, res) => {
         if (!user || !(await comparePasswords(password, user.password))) {
             return res.status(401).json({ success: false, code: 106, message: 'Invalid credentials' });
         }
+        
+        if (!user.active) {
+            return res.status(401).json({ success: false, code: 115, message: 'Your account is banned' });
+        }
 
         const { password: userPassword, ...userWithoutPassword } = user.toObject();
 
