@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('./db');
 const authRoutes = require('./routes/authRoutes');
 const modRoutes = require('./routes/modRoutes');
+const searchRoutes = require('./routes/searchRoutes');
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -9,12 +10,14 @@ const bodyParser = require('body-parser');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const swaggerOptions = require('../swaggerOptions');
-
+const main_upload_folder = process.env.MAIN_UPLOAD_FOLDER
+const profile_pictures_upload_folder = process.env.PROFILE_PICTURES_UPLOAD_FOLDER
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 const corsOptions = {
-    origin: 'http://localhost:3001',
+    origin: allowedOrigins,
     methods: 'GET,POST,PUT',
     optionsSuccessStatus: 204
 };
@@ -26,7 +29,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 
 
-app.use('/uploads/profile_pictures', express.static(path.join(__dirname, 'uploads', 'profile_pictures')));
+app.use(`/${main_upload_folder}/${profile_pictures_upload_folder}`, express.static(path.join(__dirname, main_upload_folder, profile_pictures_upload_folder)));
 
 
 app.use(bodyParser.json()); // Parse JSON data
@@ -36,7 +39,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/auth', authRoutes);
 app.use('/mod', modRoutes);
+app.use('/search', searchRoutes);
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.warn('\x1b[32m%s\x1b[0m', `\nServer is running on port ${PORT}`);
+    console.warn('\x1b[32m%s\x1b[0m', `\nAllowed CORS origins: [${allowedOrigins}]`)
+    console.warn('\x1b[32m%s\x1b[0m', `\nAllowed CORS methods: [${corsOptions.methods}]`)
+    console.warn('\x1b[32m%s\x1b[0m', `\nMain Upload directory: ${main_upload_folder}`)
+    console.info('\x1b[32m%s\x1b[0m', `\nToken lifetime : ${process.env.TOKEN_LIFE}`)
 });

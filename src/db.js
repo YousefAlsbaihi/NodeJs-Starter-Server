@@ -5,7 +5,7 @@ const MONGODB_URI = process.env.DATABASE;
 
 mongoose.connect(MONGODB_URI)
     .then(() => {
-        console.log('Successfully connected to the database');
+        console.log('\x1b[32m%s\x1b[0m', '\nMongodb is connected');
     })
     .catch((error) => {
         console.error('Connection error:', error);
