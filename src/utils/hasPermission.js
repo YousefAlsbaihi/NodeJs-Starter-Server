@@ -15,7 +15,7 @@ const hasPermission = (permission) => {
             const user = await User.findById(decoded.id); // Find user by ID from decoded token
 
             if (!user) {
-                return res.status(404).json({ success: false, code: 899, message: 'User not found' });
+                return res.status(404).json({ success: false, code: 899, message: 'User not found based on the provided token' });
             }
 
             req.user = user; // Attach user object to the request
