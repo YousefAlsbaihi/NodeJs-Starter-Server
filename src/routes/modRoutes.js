@@ -4,22 +4,19 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const hasPermission = require('../utils/hasPermission');
+
 require('dotenv').config();
+const main_upload_folder = process.env.MAIN_UPLOAD_FOLDER
+const profile_pictures_upload_folder = process.env.PROFILE_PICTURES_UPLOAD_FOLDER
+
+
+const { createStorage, createUploadMiddleware } = require('../utils/multerSetup');
+const storage = createStorage(`src/${main_upload_folder}/${profile_pictures_upload_folder}`);
+const uploadMiddleware = createUploadMiddleware(storage);
+
+
 const router = express.Router();
 const { isValidEmail, isValidPassword } = require('../utils/auth');
-const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'src/uploads/profile_pictures'); // Specify the directory for uploads
-    },
-    filename: function (req, file, cb) {
-        const extension = path.extname(file.originalname);
-        const name = (Date.now() + "-" + Math.round(Math.random() * 1e9))
-        cb(null, name + extension); // Use the original filename with extension
-    }
-});
-
-const upload = multer({ storage: storage });
 
 
 /**
@@ -82,7 +79,7 @@ const upload = multer({ storage: storage });
 
 router.get('/users', hasPermission('mod_all_users'), async (req, res) => {
     try {
-        let { page = 1, limit = 10, sort = 'createdAt', order = 'desc' } = req.query;
+        let { page = 1, limit = process.env.MOD_PER_PAGE_USERS, sort = 'createdAt', order = 'desc' } = req.query;
 
         // Validate and parse query parameters
         page = parseInt(page);
@@ -149,7 +146,6 @@ router.get('/users', hasPermission('mod_all_users'), async (req, res) => {
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
  *           schema:
  *             $ref: '#/components/schemas/Update_account_mod'
  *     responses:
@@ -162,77 +158,76 @@ router.get('/users', hasPermission('mod_all_users'), async (req, res) => {
  *       401:
  *         description: Token not provided
  */
-router.put('/update-user/:userId', hasPermission('mod_update_users'), async (req, res) => {
+router.put('/update-user/:userId', uploadMiddleware.single('file'), hasPermission('mod_update_users'), async (req, res) => {
     try {
-        upload.single('file')(req, res, async () => {
-            const { userId } = req.params; // Get userId from the route params
-            const { name, email, password, permissions } = req.body;
+        const { userId } = req.params; // Get userId from the route params
+        let { name, email, password, permissions } = req.body;
+        email = email.toLowerCase();
 
-            // Find the user by ID
-            const userToUpdate = await User.findById(userId);
+        // Find the user by ID
+        const userToUpdate = await User.findById(userId);
 
-            if (!userToUpdate) {
-                return res.status(404).json({ success: false, code: 310, message: 'User not found' });
+        if (!userToUpdate) {
+            return res.status(404).json({ success: false, code: 310, message: 'User not found' });
+        }
+
+        // Update user details
+        if (name) {
+            userToUpdate.name = name;
+        }
+
+        if (email && email !== userToUpdate.email) {
+            // Check if the email already exists in the database
+            const existingUser = await User.findOne({ email: email });
+
+            if (existingUser) {
+                return res.status(400).json({ success: false, code: 311, message: 'Email is already taken by another user' });
             }
 
-            // Update user details
-            if (name) {
-                userToUpdate.name = name;
+            userToUpdate.email = email;
+        }
+
+        if (password) {
+            if (!isValidPassword(password)) {
+                return res.status(400).json({ success: false, code: 312, message: 'Password must be at least ' + process.env.MIN_PASSWORD + ' or more characters' });
             }
 
-            if (email && email !== userToUpdate.email) {
-                // Check if the email already exists in the database
-                const existingUser = await User.findOne({ email: email });
+            const hashedPassword = await bcrypt.hash(password, 10);
+            userToUpdate.password = hashedPassword;
+        }
 
-                if (existingUser) {
-                    return res.status(400).json({ success: false, code: 311, message: 'Email is already taken by another user' });
+        if (permissions.length === 0) {
+            return res.status(400).json({ success: false, code: 313, message: 'At least one permission has to be assigned for the user' });
+        } else {
+            userToUpdate.permissions = permissions
+        }
+
+        // Check if profile_picture is uploaded
+        if (req.file) {
+            // If user already has a profile picture, delete it
+            if (userToUpdate.profile_picture) {
+                // Construct the file path
+                const filePath = path.join(__dirname, '..', userToUpdate.profile_picture);
+
+                // Check if the file exists, then delete it
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
                 }
-
-                userToUpdate.email = email;
             }
 
-            if (password) {
-                if (!isValidPassword(password)) {
-                    return res.status(400).json({ success: false, code: 312, message: 'Password must be at least ' + process.env.MIN_PASSWORD + ' or more characters' });
-                }
+            // Save the new profile picture path
+            userToUpdate.profile_picture = `/${main_upload_folder}/${profile_pictures_upload_folder}/` + req.file.filename;
+        }
 
-                const hashedPassword = await bcrypt.hash(password, 10);
-                userToUpdate.password = hashedPassword;
-            }
+        const permissionsArray = permissions.split(',');
+        userToUpdate.permissions = permissionsArray
+        await userToUpdate.save();
+        const { password: _, ...userWithoutPassword } = userToUpdate.toObject();
 
-            if (permissions.length === 0) {
-                return res.status(400).json({ success: false, code: 313, message: 'At least one permission has to be assigned for the user' });
-            } else {
-                userToUpdate.permissions = permissions
-            }
-
-            // Check if profile_picture is uploaded
-            if (req.file) {
-                // If user already has a profile picture, delete it
-                if (userToUpdate.profile_picture) {
-                    // Construct the file path
-                    const filePath = path.join(__dirname, '..', userToUpdate.profile_picture);
-
-                    // Check if the file exists, then delete it
-                    if (fs.existsSync(filePath)) {
-                        fs.unlinkSync(filePath);
-                    }
-                }
-
-                // Save the new profile picture path
-                userToUpdate.profile_picture = "/uploads/profile_pictures/" + req.file.filename;
-            }
-
-            const permissionsArray = permissions.split(',');
-            userToUpdate.permissions = permissionsArray
-            await userToUpdate.save();
-            const { password: _, ...userWithoutPassword } = userToUpdate.toObject();
-
-            res.status(200).json({
-                success: true,
-                code: 505,
-                user: userWithoutPassword,
-            });
+        res.status(200).json({
+            success: true,
+            code: 505,
+            user: userWithoutPassword,
         });
     } catch (error) {
         res.status(400).json({ success: false, code: 307, message: 'Error updating user details', error: error.message });
@@ -251,7 +246,6 @@ router.put('/update-user/:userId', hasPermission('mod_update_users'), async (req
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
  *           schema:
  *             $ref: '#/components/schemas/Create_account_mod'
  *     responses:
@@ -264,53 +258,53 @@ router.put('/update-user/:userId', hasPermission('mod_update_users'), async (req
  *       401:
  *         description: Token not provided
  */
-router.post('/create-user', hasPermission('mod_create_users'), async (req, res) => {
+router.post('/create-user', uploadMiddleware.single('file'), hasPermission('mod_create_users'), async (req, res) => {
     try {
-        upload.single('file')(req, res, async () => {
-            const { name, password, email, permissions } = req.body;
-            console.log(name)
-            // Validate entries
-            if (!isValidEmail(email)) {
-                return res.status(400).json({
-                    success: false,
-                    code: 320,
-                    message: 'Enter a valid email address'
-                });
-            }
+        let { name, password, email, permissions } = req.body;
+        email = email.toLowerCase();
 
-            const existingUser = await User.findOne({ email });
-            if (existingUser) {
-                return res.status(400).json({ success: false, code: 321, message: 'Email is already in use' });
-            }
-
-            if (!isValidPassword(password)) {
-                return res.status(400).json({ success: false, code: 322, message: 'Password must be at least ' + process.env.MIN_PASSWORD + ' or more characters' });
-            }
-
-            if (permissions.length === 0) {
-                return res.status(400).json({ success: false, code: 323, message: 'At least one permission has to be assigned for the user' });
-            }
-
-            const hashedPassword = await bcrypt.hash(password, 10);
-
-            let profilePicture = null;
-
-            // Check if profile_picture is uploaded
-            if (req.file) {
-                profilePicture = "/uploads/profile_pictures/" + req.file.filename;
-            }
-            const permissionsArray = permissions.split(',');
-            const user = new User({
-                name,
-                password: hashedPassword,
-                email,
-                profile_picture: profilePicture,
-                permissions: permissionsArray
+        console.log(name)
+        // Validate entries
+        if (!isValidEmail(email)) {
+            return res.status(400).json({
+                success: false,
+                code: 320,
+                message: 'Enter a valid email address'
             });
+        }
 
-            await user.save();
-            res.status(201).json({ success: true, code: 506, message: 'User Created successfully', user: user });
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, code: 321, message: 'Email is already in use' });
+        }
+
+        if (!isValidPassword(password)) {
+            return res.status(400).json({ success: false, code: 322, message: 'Password must be at least ' + process.env.MIN_PASSWORD + ' or more characters' });
+        }
+
+        if (permissions.length === 0) {
+            return res.status(400).json({ success: false, code: 323, message: 'At least one permission has to be assigned for the user' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        let profilePicture = null;
+
+        // Check if profile_picture is uploaded
+        if (req.file) {
+            profilePicture = `/${main_upload_folder}/${profile_pictures_upload_folder}/` + req.file.filename;
+        }
+        const permissionsArray = permissions.split(',');
+        const user = new User({
+            name,
+            password: hashedPassword,
+            email,
+            profile_picture: profilePicture,
+            permissions: permissionsArray
         });
+
+        await user.save();
+        res.status(200).json({ success: true, code: 506, message: 'User Created successfully', user: user });
 
     } catch (error) {
         res.status(400).json({ success: false, code: 329, message: 'Error registering user', error: error.message });
@@ -376,7 +370,7 @@ router.put('/ban-user/:userId', hasPermission('mod_ban_users'), async (req, res)
         await userToUpdate.save();
         const { password: _, ...userWithoutPassword } = userToUpdate.toObject();
 
-        res.status(400).json({
+        res.status(200).json({
             success: true,
             code: 30,
             user: userWithoutPassword,
@@ -384,6 +378,83 @@ router.put('/ban-user/:userId', hasPermission('mod_ban_users'), async (req, res)
 
     } catch (error) {
         res.status(400).json({ success: false, code: 339, message: 'Error updating user details', error: error.message });
+    }
+});
+
+
+/**
+ * @swagger
+ * /mod/delete-user/{userId}:
+ *   put:
+ *     summary: Delete User in moderation 
+ *     tags:
+ *       - Moderator
+ *     security: 
+ *        [{ BearerAuth: []}]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *           schema:
+ *             $ref: '#/components/schemas/Delete_user'
+ *     parameters: [
+ *         {
+ *           in: 'path',
+ *           name: 'userId',
+ *           required: true,
+ *           schema: {
+ *             type: 'string',
+ *           },
+ *           description: 'The ID of the user to ban/unban',
+ *         },
+ *     ]
+ *     responses:
+ *       200:
+ *         description: Operation successful
+ *       403:
+ *         description: Forbidden, Not enough permission to perform operation
+ *       400:
+ *         description: Bad request, error updating
+ *       401:
+ *         description: Token not provided
+ */
+
+router.put('/delete-user/:userId', hasPermission('mod_delete_users'), async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Retrieve the user from the database
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, code: 340, message: 'User not found' });
+        }
+
+        // Check if the user has a photo
+        if (user.profile_picture) {
+
+            // Construct the file path
+            const filePath = path.join(__dirname, '..', user.profile_picture);
+            // Check if the file exists, then delete it
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+        // Proceed with the delete operation
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return res.status(400).json({ success: false, code: 342, message: 'Something went wrong, try again later' });
+        }
+
+
+        res.status(200).json({
+            success: true,
+            code: 509,
+            message: "User Deleted successfully !",
+        });
+
+    } catch (error) {
+        res.status(400).json({ success: false, code: 344, message: 'Error deleting user ', error: error.message });
     }
 });
 
