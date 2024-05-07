@@ -71,7 +71,7 @@ const swaggerOptions = {
                         },
                     },
                 },
-                get_users: {
+                Get_users: {
                     type: 'object',
                     properties: {
                         id: { type: 'string' },
@@ -147,6 +147,26 @@ const swaggerOptions = {
                     type: 'object',
                     properties: {
                         id: { type: 'string' },
+                    },
+                },
+                Delete_user: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'string' },
+                    },
+                },
+                Delete_account: {
+                    type: 'object',
+                    required: ['id', 'password'],
+                    properties: {
+                        id: {
+                            type: 'string',
+                            description: 'User Id to delete',
+                        },
+                        password: {
+                            type: 'string',
+                            description: 'User password',
+                        },
                     },
                 }
             },
