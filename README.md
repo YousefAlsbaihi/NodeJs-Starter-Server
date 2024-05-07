@@ -22,12 +22,17 @@ List the libraries used in this project :
 - /auth/login
 - /auth/register
 - /auth/update
+- /auth/delete-user/{userId}
 
 ### Moderation Routes
 - /mod/users
 - /mod/update-user/{userId}
 - /mod/create-user
 - /mod/ban-user/{userId}
+- /mod/delete-user/{userId}
+  
+### Search Route
+- /search/q/
 
 ### Other Routes
 - api-docs/ " This route will open Swager UI documentation "
@@ -187,6 +192,39 @@ Permission required: mod_ban_users
 | 508  | true  | User banned Successfully  | /mod/ban-user/{userId} |
 
 <br> <br> 
+
+## User delete their account<br>
+Permission: delete_account<br>
+/auth/delete-account/user_id<br><br>
+
+| Code  | Success | Message  | Route |
+| ------------- | ------------- | ------------- | ------------- |
+| 344  | false  | Password is not provided  | /auth/delete-account/user_id  |
+| 340  | false  | User not found to delete  | /auth/delete-account/user_id  |
+| 341  | false  | Incorrect Password | /auth/delete-account/user_id |
+| 342  | false  | Something went wrong and user not deleted from mongoDB  | /auth/delete-account/user_id |
+| 344  | false  | Error deleting user, see console for error details  | /auth/delete-account/user_id |
+| 509  | true  | User deleted successfully  | /auth/delete-account/user_id |
+
+<br><br>
+
+
+## Mod Delete user account <br>
+Permission: mod_delete_users<br>
+/mod/delete-user/user_id<br><br>
+
+
+| Code  | Success | Message  | Route |
+| ------------- | ------------- | ------------- | ------------- |
+| 340  | false  | User not found to delete  | /auth/delete-account/user_id  |
+| 342  | false  | Something went wrong and user not deleted from mongoDB  | /auth/delete-account/user_id |
+| 344  | false  | Error deleting user, see console for error details  | /auth/delete-account/user_id |
+| 509  | true  | User deleted successfully  | /auth/delete-account/user_id |
+
+
+
+
+<br> <br> 
 ## Other Error Codes
 
 
@@ -202,13 +240,89 @@ Other Error Codes, associated with tokens and tokens issues such as not valid to
 
 <br> <br>
 ## Available Permissions
+<br><br>
+### Moderators Available Permissions
+
 | Permission  | Usage |
 | ------------- | ------------- |
-| update_profile  | Users can update their own account informations if they have this permission in their account |
 | mod_all_users  | User have access to make a call to see all users in the database |
 | mod_update_users  | User have the ability to update any user details in the database |
 | mod_create_users  | User can create users accounts and assign permissions to them |
-| mod_ban_users  | User can banned any other user  |
+| mod_ban_users | User can banned any other user  |
+| mod_delete_users | Moderator can delete users accounts |
+| mod_search | User can search for other users with Moderator fields defined in the .env file |
+
+### Users Available Permissions
+
+| Permission  | Usage |
+| ------------- | ------------- |
+| update_profile  | Users can update their own account informations if they have this permission in their account |
+| search_users | User can search for other users  |
+| delete_account | User can delete their own accounts  |
+
+<br><br><hr>
+
+
+# Search for users 
+Permission: search_users<br>
+Permission for Moderator: search_users and mod_search<br>
+<br><br>
+**The search is available for all users and mods, if you want to allow any user to search, you give the permission search_user and the allowed search fields are located inside the .evn file where you will find what fields are users and mods allowed to search based on**
+<br><br>
+Search fields for <br>Mods MOD_SEARCH_FIELDS=id,name,email,active,profile_picture,permissions,createdAtMin,createdAtMax,updatedAtMax,updatedAtMin 
+<br><br>
+Searchable fields for users<br>
+USERS_SEARCH_FIELDS=name,email<br>
+
+<br>
+If you want to give a user permission to search as Mod you can add extra permission value 
+mod_search 
+<br>
+Note that users & mods cannot search if they don’t have the basic permission “search_users”<br>
+
+<br><br>
+
+### Search query depends on the the following query parameters where you can mix and match
+
+
+| parameter  | value |
+| ------------- | ------------- | 
+| name  | String |
+| email  | String |
+| hasProfilePicture  | boolean |
+| permission  | array |
+| createdAtMin  | date |
+| createdAtMax  | date |
+| updatedAtMin  | date |
+| updatedAtMax  | date |
+
+Example call <br>
+```example.com/search/q/?active=false&permission=update_profile&hasProfilePicture=false```
+<br>
+
+Response
+
+| Code  | Success | Message  | Route |
+| ------------- | ------------- | ------------- | ------------- |
+| 409  | false  | Cannot search with requested field  | /search/q/?{search_term}  |
+| 410  | false  | Error searching for users, see console for error details  | /search/q/?{search_term} |
+| 511  | true  | User search successful  | /search/q/?{search_term} |
+
+<hr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <br> <br>
 # .env file
@@ -228,7 +342,19 @@ MIN_PASSWORD=6
 TOKEN_LIFE=12h
 
 **Number of users to return in each page for moderator when requesting all users, Recommended 50**<br> 
-MOD_PER_PAGE_USERS=50
+MOD_PER_PAGE_USERS=50<br><br>
+**Moderation searchable fields for users**<br> 
+MOD_SEARCH_FIELDS=id,name,email,active,profile_picture,permissions,createdAtMin,createdAtMax,updatedAtMax,updatedAtMin<br> <br> 
+**Moderation searchable fields for users**<br> 
+USERS_SEARCH_FIELDS=name,email<br> <br> 
+**Allowrd origins**<br> 
+ALLOWED_ORIGINS=http://localhost:3001,http://localhost:3002<br> <br> 
+
+**Files and pictures storage**<br> 
+#### the main upload folder is the folder that has all other folders inside it<br> 
+MAIN_UPLOAD_FOLDER=uploads<br> <br> 
+#### Child folders to upload the profile pictures in this case the path will be "uploads/profile_pictures"<br> 
+PROFILE_PICTURES_UPLOAD_FOLDER=profile_pictures
 
 <br> <br> <br> 
 
