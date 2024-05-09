@@ -46,17 +46,7 @@ List the libraries used in this project :
   No Permission required
   
 ### Example Call
-```bash
-curl -X POST \
-  http://localhost:3000/auth/register \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "email": "email@example.com",
-    "password": "12345",
-    "name": "John Doe",
-    "profile_picture": "data:image/png;base64,iVBORw0KGgoAAAA"
-  }'
-```
+
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
 | 101  | false  | Not Valid Email Address  | /auth/register  |
@@ -74,15 +64,7 @@ curl -X POST \
  No Permission required
 
 ### Example Call
-```bash
-curl -X POST \
-  http://localhost:3000/auth/login \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "email": "email@example.com",
-    "password": "12345"
-  }'
-```
+
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
 | 106  | false  | Invalid Credentials / Wrong email or password  | /auth/login  |
@@ -97,18 +79,7 @@ curl -X POST \
   Permission required: update_profile
   
 ### Example Call
-```bash
-curl -X PUT \
-  http://localhost:3000/auth/register \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer 9das0d90ka9sdk' \
-  -d '{
-    "email": "email@example.com",
-    "password": "12345",
-    "name": "John Doe",
-    "profile_picture": "data:image/png;base64,iVBORw0KGgoAAAA"
-  }'
-```
+
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
 | 108  | false  | Token is not provided  | /auth/update  |
@@ -309,19 +280,6 @@ Response
 | 511  | true  | User search successful  | /search/q/?{search_term} |
 
 <hr>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <br> <br>
