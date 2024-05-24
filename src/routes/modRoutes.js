@@ -162,7 +162,7 @@ router.put('/update-user/:userId', uploadMiddleware.single('file'), hasPermissio
     try {
         const { userId } = req.params; // Get userId from the route params
         let { name, email, password, permissions } = req.body;
-        email = email.toLowerCase();
+        // email = email.toLowerCase();
 
         // Find the user by ID
         const userToUpdate = await User.findById(userId);
@@ -261,7 +261,7 @@ router.put('/update-user/:userId', uploadMiddleware.single('file'), hasPermissio
 router.post('/create-user', uploadMiddleware.single('file'), hasPermission('mod_create_users'), async (req, res) => {
     try {
         let { name, password, email, permissions } = req.body;
-        email = email.toLowerCase();
+        // email = email.toLowerCase();
 
         console.log(name)
         // Validate entries
