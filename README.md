@@ -45,6 +45,7 @@ List the libraries used in this project :
   
   No Permission required
   <br>
+  Fields: name, password, email | All fields required<br>
 
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
@@ -63,6 +64,7 @@ List the libraries used in this project :
  No Permission required
 
 <br>
+Fields: password, email | All fields required <br>
 
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
@@ -77,6 +79,8 @@ List the libraries used in this project :
   
   Permission required: update_profile
   
+  <br>
+  Fields: name, email, password, file (profile picture), token  | All those fields are optional except for the token 
   <br>
 
 | Code  | Success | Message  | Route |
@@ -98,6 +102,9 @@ List the libraries used in this project :
   Permission required: delete_account
   
   <br>
+  Fields: password, token  | All fields required 
+  <br>
+  
 
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
@@ -132,7 +139,8 @@ List the libraries used in this project :
 URL: /mod/users
 
 Permission required: mod_all_users
-
+<br>
+Fields: It will get all users, no fields reqiured except when you do pagination you need to pass query contain ( page, limit, sort, order ) page and limit are required otherwise you will get the default limits assigned in the .env file
 
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
@@ -150,8 +158,9 @@ Permission required: mod_all_users
 /mod/update-user/{userId}
 
 Permission required: mod_update_users
-
-
+<br>
+Fields: name, email, password, permissions, file( User Profile Picture ), token | All fields are optionals except for the token is required, permissinos need to have at least one field
+<br>
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
 | 310  | false  | User not found | /mod/update-user/{userId}  |
@@ -169,7 +178,9 @@ Permission required: mod_update_users
 /mod/create-user
 
 Permission required: mod_create_users
-
+<Br>
+Fields: name, email, password, permissions, file( User Profile Picture ), token | All fields are optionals except for the token is required, permissinos need to have at least one field
+<br>
 
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
@@ -187,7 +198,9 @@ Permission required: mod_create_users
 /mod/ban-user/{userId}
 
 Permission required: mod_ban_users
-
+<br>
+Fields: token | token is required
+<br>
 
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
@@ -199,8 +212,10 @@ Permission required: mod_ban_users
 
 ## User delete their account<br>
 Permission: delete_account<br>
-/auth/delete-account/user_id<br><br>
-
+/auth/delete-account/user_id<br>
+<br>
+Fields: token | token is required
+<br>
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
 | 344  | false  | Password is not provided  | /auth/delete-account/user_id  |
