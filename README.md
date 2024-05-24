@@ -22,7 +22,7 @@ List the libraries used in this project :
 - /auth/login
 - /auth/register
 - /auth/update
-- /auth/delete-user/{userId}
+- /auth/delete-account
 
 ### Moderation Routes
 - /mod/users
