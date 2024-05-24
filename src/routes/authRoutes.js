@@ -52,7 +52,7 @@ const router = express.Router();
 router.post('/register', uploadMiddleware.single('file'), async (req, res) => {
     try {
         let { name, password, email } = req.body;
-        email = email.toLowerCase();
+        // email = email.toLowerCase();
         let picture = null;
         // Validate entries
 
@@ -132,7 +132,7 @@ router.post('/register', uploadMiddleware.single('file'), async (req, res) => {
 router.post('/login', uploadMiddleware.single(), async (req, res) => {
     try {
         let { email, password } = req.body;
-        email = email.toLowerCase();
+        // email = email.toLowerCase();
         const user = await User.findOne({ email });
 
         if (!user || !(await comparePasswords(password, user.password))) {
@@ -196,12 +196,13 @@ router.put('/update', hasPermission('update_profile'), uploadMiddleware.single('
     try {
         const { user } = req; // Get user object directly from the request
         let { name, email, password } = req.body;
+
         // Update user details
         if (name) {
             user.name = name;
         }
         if (email && email !== user.email) {
-            email = email.toLowerCase();
+            // email = email.toLowerCase();
             // Check if the email already exists in the database
             const existingUser = await User.findOne({ email: email });
 
