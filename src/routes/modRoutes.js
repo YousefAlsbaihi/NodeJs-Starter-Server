@@ -385,7 +385,7 @@ router.put('/ban-user/:userId', hasPermission('mod_ban_users'), async (req, res)
 /**
  * @swagger
  * /mod/delete-user/{userId}:
- *   put:
+ *   delete:
  *     summary: Delete User in moderation 
  *     tags:
  *       - Moderator
@@ -418,7 +418,7 @@ router.put('/ban-user/:userId', hasPermission('mod_ban_users'), async (req, res)
  *         description: Token not provided
  */
 
-router.put('/delete-user/:userId', hasPermission('mod_delete_users'), async (req, res) => {
+router.delete('/delete-user/:userId', hasPermission('mod_delete_users'), async (req, res) => {
     try {
         const { userId } = req.params;
 
