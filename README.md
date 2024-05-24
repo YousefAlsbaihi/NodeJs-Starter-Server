@@ -44,8 +44,7 @@ List the libraries used in this project :
 ## Registeration API 
   
   No Permission required
-  
-### Example Call
+  <br>
 
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
@@ -63,7 +62,7 @@ List the libraries used in this project :
  
  No Permission required
 
-### Example Call
+<br>
 
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
@@ -78,7 +77,7 @@ List the libraries used in this project :
   
   Permission required: update_profile
   
-### Example Call
+  <br>
 
 | Code  | Success | Message  | Route |
 | ------------- | ------------- | ------------- | ------------- |
@@ -91,6 +90,40 @@ List the libraries used in this project :
 | 203  | true  | User details updated successfully  | /auth/update |
 
 <br> <br>
+
+
+
+## Delete User API 
+    
+  Permission required: delete_account
+  
+  <br>
+
+| Code  | Success | Message  | Route |
+| ------------- | ------------- | ------------- | ------------- |
+| 108  | false  | Token is not provided  | /auth/delete-account  |
+| 109  | false  | Token provided is not valid  | /auth/delete-account  |
+| 110  | false  | User not found based on the token provided  | /auth/delete-account |
+| 344  | false  | User password not provided  | /auth/delete-account |
+| 341  | false  | Wrong password | /auth/delete-account |
+| 342  | false  | Error deleting user, see console for error details  | /auth/delete-account |
+| 508  | true  | User deleted successfully  | /auth/delete-account |
+
+<br> <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Moderation API 
 <br> <br> 
 
