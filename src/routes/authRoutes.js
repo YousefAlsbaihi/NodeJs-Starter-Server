@@ -262,8 +262,8 @@ router.put('/update', hasPermission('update_profile'), uploadMiddleware.single('
 
 /**
  * @swagger
- * /auth/delete-user/{userId}:
- *   put:
+ * /auth/delete-account:
+ *   delete:
  *     summary: User delete their own accounts 
  *     tags:
  *       - Authentication
@@ -286,9 +286,10 @@ router.put('/update', hasPermission('update_profile'), uploadMiddleware.single('
  *         description: Token not provided
  */
 
-router.put('/delete-account/:userId', uploadMiddleware.single(), hasPermission('delete_account'), async (req, res) => {
+router.delete('/delete-account', hasPermission('delete_account'), uploadMiddleware.single(), async (req, res) => {
     try {
-        const { userId } = req.params;
+        // const { userId } = req.params;
+        const { user } = req;
         const { password } = req.body;
 
 
@@ -298,21 +299,21 @@ router.put('/delete-account/:userId', uploadMiddleware.single(), hasPermission('
 
 
         // Retrieve the user from the database
-        const user = await User.findById(userId);
+        const finUser = await User.findById(user._id);
 
-        if (!user) {
+        if (!finUser) {
             return res.status(404).json({ success: false, code: 340, message: 'User not found' });
         }
 
         // Compare passwords
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, finUser.password);
 
         if (!isPasswordValid) {
             return res.status(400).json({ success: false, code: 341, message: 'Incorrect password' });
         }
 
         // Proceed with the delete operation
-        const deletedUser = await User.findByIdAndDelete(userId);
+        const deletedUser = await User.findByIdAndDelete(user._id);
 
         if (!deletedUser) {
             return res.status(400).json({ success: false, code: 342, message: 'Something went wrong, Try again later' });
