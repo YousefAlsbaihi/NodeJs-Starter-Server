@@ -4,7 +4,9 @@ This NodeJs starter server has all the basic functions for users to start and se
 ## About The Project
 
 NodeJs server with Users functionalities **Signup**, **Login**, **Update** and connected to **MongoDB** as database and JWT token authentication and users **Permissions**
-very simple code and easy to read, use and extend.
+very simple code and easy to read, use and extend.<br><br>
+
+Also added files upload and files encryption <br database backup and restore<br> users search query and moderation with permissions.
 
 ### Built With
 
@@ -15,6 +17,9 @@ List the libraries used in this project :
 - bcryptjs
 - jsonwebtoken
 - mongoose
+- crypto
+- multer
+- mime-types
 
 
 # Available Routes
@@ -30,12 +35,18 @@ List the libraries used in this project :
 - /mod/create-user
 - /mod/ban-user/{userId}
 - /mod/delete-user/{userId}
+- /mod/files
+- /mod/delete-file/{file_id}
+- /mod/backup
+- /mod/restore
   
-### Search Route
+### Users Search Route
 - /search/q/
 
-### Other Routes
-- api-docs/ " This route will open Swager UI documentation "
+### Upload & Files Routes
+- /files/upload
+- /files/get
+- /files/download/{file_id}
 
 <br> <br>
 
@@ -330,6 +341,121 @@ Response
 <hr>
 
 
+
+
+# Upload Files
+
+When uploading a file it will be encrypted by default and uploaded to the server storage 
+The file will be encrypted using “aes-256-cbc” and to verify data integrity we added hash “sha256” to the files <br>
+
+To upload file, send it to the route as post request <br>
+
+```files/upload```<br>
+
+Permission required: upload_files<br>
+
+Fields: files, token (both fields required)<br>
+
+Note, it’s support multiple files upload 
+Limit files uploads can be added inside the .env file
+
+
+<br><br>
+
+# Retrieve Files 
+<br>
+Retrieve files will use get and you can retrieve multiple files at once.
+all files details including uri, name, size, type…etc
+<br>
+Permission required: get_files
+<br><br>
+Get files by id’s<br>
+/files/get/?ids=files_ids
+<br><br>
+Get files by user id<br>
+/files/get/?uploadedBy=user_id
+<br><br>
+
+Example call: <br>
+By files id’s<br>
+```/files/get/?ids=66576918bf2a799874947cad,66576218xf2a799874947mda```
+<br>
+By user id<br>
+```/files/get/?uploadedBy=6650e34b3f1b6cd9758fa45e```
+
+
+<br><br>
+# Download Files
+
+To download files it will be auto decrypted send you the file to download/display<br><br>
+
+To download file use get request to the route <br>
+files/download/{file_id}<br>
+<br><br>
+If you pass param `download=false` this will just open the file in the browser and won’t download it 
+Example <br>
+
+```/files/download/6658c1170cbb2868ef7b91ad?download=false```
+
+
+<br><br>
+
+# Moderation get all files
+
+This will get all the files from the database and allow moderator to view, download, delete them 
+<br>
+Permission required: mod_all_files
+<br>
+You can limit, skip, sort and order for pagination 
+<br>
+```/mod/files?page=1&limit=10```
+
+<br><br>
+# Moderation Delete file
+<br>
+This will be a delete request to delete a file from the server and the database 
+<br>
+Permission required: mod_delete_file
+<br>
+/mod/delete-file/{file_id}
+<br>
+Pass file id and current user token to delete file 
+
+<hr>
+
+# Database Backup & Restore
+<br><br>
+# Moderation Database Backup
+<br>
+To backup database you can do a get request, this will download encrypted json file with all database tables and data 
+This json file will use the same encryption as files use’s in the system.
+<br>
+Permission required: mod_backup
+<br>
+/mod/backup
+
+<br><br>
+
+# Moderation Restore Database
+<br>
+To Restore this backup you will need to do a post request with the backup file and the token
+<br>
+Permission required: mod_restore
+<br>
+Fields: <br>
+restore = the backup file you downloaded “required”<br>
+Token = User token “required”
+
+
+
+
+
+
+
+
+
+
+
 <br> <br>
 # .env file
 In .env file you will find few settings for your app 
@@ -356,11 +482,25 @@ USERS_SEARCH_FIELDS=name,email<br> <br>
 **Allowrd origins**<br> 
 ALLOWED_ORIGINS=http://localhost:3001,http://localhost:3002<br> <br> 
 
-**Files and pictures storage**<br> 
-#### the main upload folder is the folder that has all other folders inside it<br> 
+***the main upload folder is the folder that has all other folders inside it***<br> 
 MAIN_UPLOAD_FOLDER=uploads<br> <br> 
-#### Child folders to upload the profile pictures in this case the path will be "uploads/profile_pictures"<br> 
-PROFILE_PICTURES_UPLOAD_FOLDER=profile_pictures
+***Child folders to upload the profile pictures in this case the path will be "uploads/profile_pictures"*** <br> 
+PROFILE_PICTURES_UPLOAD_FOLDER=profile_pictures<br> <br> 
+
+**Files encryption key, Encryption password must be 32 character for cbc encryption**<br>
+ENCRYPTION_PASSWORD=LjKjcowHa39jMkcj0WmbDNvwdCF2whea<br> <br> 
+**Files encryption type, Encryption type, default ges-256-cbc***<br>
+ENCRYPTION_TYPE=aes-256-cbc<br> <br> 
+**Upload folder for files, Default files folder inside src/uploads**<br>
+FILES_UPLOAD_FOLDER=files<br> <br> 
+**Number of files can be uploaded at once,default 10***<br>
+FILES_PER_UPLOAD=10<br> <br> 
+***Moderation all files per page***<br>
+MOD_PER_PAGE_FILES=5
+
+
+
+
 
 <br> <br> <br> 
 
