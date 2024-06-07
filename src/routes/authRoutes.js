@@ -17,38 +17,6 @@ const uploadMiddleware = createUploadMiddleware(storage);
 const router = express.Router();
 
 
-
-
-/**
- * @swagger
- * /auth/register:
- *   post:
- *     summary: Signup user
- *     tags:
- *       - Authentication
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Signup'
- *     responses:
- *       200:
- *         description: Operation successful
- *       400:
- *         description: Bad request, error Signing Up
- */
-
-
-// Data Example
-// {
-//     "email":"email@1example.com",
-//     "password": "123456",
-//     "name": "John Doe",
-//     "profile_picture": "data:image/png;base64,iVBORw0KGgo..."
-// }
-
-
 router.post('/register', uploadMiddleware.single('file'), async (req, res) => {
     try {
         let { name, password, email } = req.body;
@@ -100,35 +68,6 @@ router.post('/register', uploadMiddleware.single('file'), async (req, res) => {
 });
 
 
-
-/**
- * @swagger
- * /auth/login:
- *   post:
- *     summary: Login user
- *     tags:
- *       - Authentication
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Login'
- *     responses:
- *       200:
- *         description: Operation successful
- *       401:
- *         description: Unauthorized, invalid credentials
- *       400:
- *         description: Bad request, error logging in
- */
-
-
-// Data Example
-// {
-//     "email":"email@example.com",
-//     "password": "123456",
-// }
 router.post('/login', uploadMiddleware.single(), async (req, res) => {
     try {
         let { email, password } = req.body;
@@ -158,39 +97,6 @@ router.post('/login', uploadMiddleware.single(), async (req, res) => {
 });
 
 
-/**
- * @swagger
- * /auth/update:
- *   put:
- *     summary: Update user account
- *     tags:
- *       - Authentication
- *     security: 
- *        [{ BearerAuth: []}]
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             $ref: '#/components/schemas/Update_account'
- *     responses:
- *       200:
- *         description: Operation successful
- *       403:
- *         description: Forbidden, Not enough permission to perform operation
- *       400:
- *         description: Bad request, error updating
- *       401:
- *         description: Token not provided
- */
-
-// Data example
-// {
-//     "email":"email@example.com",
-//     "password": "123456",
-//     "name": "John Doe",
-//     "profile_picture": "data:image/png;base64,iVBORw0KGgo..."
-// }
 
 router.put('/update', hasPermission('update_profile'), uploadMiddleware.single('file'), async (req, res) => {
     try {
@@ -257,35 +163,6 @@ router.put('/update', hasPermission('update_profile'), uploadMiddleware.single('
 });
 
 
-
-
-
-
-/**
- * @swagger
- * /auth/delete-account:
- *   delete:
- *     summary: User delete their own accounts 
- *     tags:
- *       - Authentication
- *     security: 
- *        [{ BearerAuth: []}]
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             $ref: '#/components/schemas/Delete_account'
- *     responses:
- *       200:
- *         description: Operation successful
- *       403:
- *         description: Forbidden, Not enough permission to perform operation
- *       400:
- *         description: Bad request, error updating
- *       401:
- *         description: Token not provided
- */
 
 router.delete('/delete-account', hasPermission('delete_account'), uploadMiddleware.single(), async (req, res) => {
     try {

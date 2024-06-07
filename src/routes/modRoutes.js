@@ -4,10 +4,12 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const hasPermission = require('../utils/hasPermission');
+const mongoose = require('../db');
 
 require('dotenv').config();
 const main_upload_folder = process.env.MAIN_UPLOAD_FOLDER
 const profile_pictures_upload_folder = process.env.PROFILE_PICTURES_UPLOAD_FOLDER
+const files_upload_folder = process.env.FILES_UPLOAD_FOLDER
 
 
 const { createStorage, createUploadMiddleware } = require('../utils/multerSetup');
@@ -17,66 +19,14 @@ const uploadMiddleware = createUploadMiddleware(storage);
 
 const router = express.Router();
 const { isValidEmail, isValidPassword } = require('../utils/auth');
+const File = require('../models/File');
+const { formatFileSize, convertToObjectId } = require('../utils/utils');
+const encrypt = require('../utils/encryptFile');
+const decrypt = require('../utils/decryptFile');
 
 
-/**
- * @swagger
- * /mod/users:
- *   get:
- *     summary: Retrieve a list of users
- *     tags:
- *       - Moderator
- *     security: 
- *       - BearerAuth: []
- *     responseType: array
- *     parameters: [
- *         {
- *           in: 'query',
- *           name: 'page',
- *           description: 'The page number to retrieve',
- *           schema: {
- *             type: 'integer',
- *             minimum: 1,
- *           },
- *         },
- *         {
- *           in: 'query',
- *           name: 'limit',
- *           description: 'The number of users per page',
- *           schema: {
- *             type: 'integer',
- *             minimum: 1,
- *             maximum: 100,
- *           },
- *         },
- *         {
- *           in: 'query',
- *           name: 'sort',
- *           description: 'The field to sort the users by',
- *           schema: {
- *             type: 'string',
- *             enum: ['createdAt', 'updatedAt'],
- *           },
- *         },
- *         {
- *           in: 'query',
- *           name: 'order',
- *           description: 'The sort order (asc or desc)',
- *           schema: {
- *             type: 'string',
- *             enum: ['asc', 'desc'],
- *           },
- *         },
- *       ]
- *     responses:
- *       200:
- *         description: Operation Successful
- *       403:
- *         description: Forbidden, Not enough permission to perform operation
- *       401:
- *         description: Token not provided
- */
 
+// Users
 router.get('/users', hasPermission('mod_all_users'), async (req, res) => {
     try {
         let { page = 1, limit = process.env.MOD_PER_PAGE_USERS, sort = 'createdAt', order = 'desc' } = req.query;
@@ -123,41 +73,6 @@ router.get('/users', hasPermission('mod_all_users'), async (req, res) => {
     }
 });
 
-/**
- * @swagger
- * /mod/update-user/{userId}:
- *   put:
- *     summary: Update user account
- *     tags:
- *       - Moderator
- *     security: 
- *        - BearerAuth: []
- *     parameters: [
- *         {
- *           in: 'path',
- *           name: 'userId',
- *           required: true,
- *           schema: {
- *             type: 'string',
- *           },
- *           description: 'The ID of the user to update',
- *         },
- *       ]
- *     requestBody:
- *       required: true
- *       content:
- *           schema:
- *             $ref: '#/components/schemas/Update_account_mod'
- *     responses:
- *       200:
- *         description: Operation successful
- *       403:
- *         description: Forbidden, Not enough permission to perform operation
- *       400:
- *         description: Bad request, error updating
- *       401:
- *         description: Token not provided
- */
 router.put('/update-user/:userId', uploadMiddleware.single('file'), hasPermission('mod_update_users'), async (req, res) => {
     try {
         const { userId } = req.params; // Get userId from the route params
@@ -234,30 +149,6 @@ router.put('/update-user/:userId', uploadMiddleware.single('file'), hasPermissio
     }
 });
 
-/**
- * @swagger
- * /mod/create-user:
- *   post:
- *     summary: Create a new user
- *     tags:
- *       - Moderator
- *     security: 
- *        [{ BearerAuth: []}]
- *     requestBody:
- *       required: true
- *       content:
- *           schema:
- *             $ref: '#/components/schemas/Create_account_mod'
- *     responses:
- *       200:
- *         description: Operation successful
- *       403:
- *         description: Forbidden, Not enough permission to perform operation
- *       400:
- *         description: Bad request, error updating
- *       401:
- *         description: Token not provided
- */
 router.post('/create-user', uploadMiddleware.single('file'), hasPermission('mod_create_users'), async (req, res) => {
     try {
         let { name, password, email, permissions } = req.body;
@@ -312,43 +203,6 @@ router.post('/create-user', uploadMiddleware.single('file'), hasPermission('mod_
 });
 
 
-/**
- * @swagger
- * /mod/ban-user/{userId}:
- *   put:
- *     summary: Ban or unban a user
- *     tags:
- *       - Moderator
- *     security: 
- *        [{ BearerAuth: []}]
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             $ref: '#/components/schemas/Ban_unban_user'
- *     parameters: [
- *         {
- *           in: 'path',
- *           name: 'userId',
- *           required: true,
- *           schema: {
- *             type: 'string',
- *           },
- *           description: 'The ID of the user to ban/unban',
- *         },
- *     ]
- *     responses:
- *       200:
- *         description: Operation successful
- *       403:
- *         description: Forbidden, Not enough permission to perform operation
- *       400:
- *         description: Bad request, error updating
- *       401:
- *         description: Token not provided
- */
-
 router.put('/ban-user/:userId', hasPermission('mod_ban_users'), async (req, res) => {
     try {
         const { userId } = req.params; // Get userId from the route params
@@ -381,42 +235,6 @@ router.put('/ban-user/:userId', hasPermission('mod_ban_users'), async (req, res)
     }
 });
 
-
-/**
- * @swagger
- * /mod/delete-user/{userId}:
- *   delete:
- *     summary: Delete User in moderation 
- *     tags:
- *       - Moderator
- *     security: 
- *        [{ BearerAuth: []}]
- *     requestBody:
- *       required: true
- *       content:
- *           schema:
- *             $ref: '#/components/schemas/Delete_user'
- *     parameters: [
- *         {
- *           in: 'path',
- *           name: 'userId',
- *           required: true,
- *           schema: {
- *             type: 'string',
- *           },
- *           description: 'The ID of the user to ban/unban',
- *         },
- *     ]
- *     responses:
- *       200:
- *         description: Operation successful
- *       403:
- *         description: Forbidden, Not enough permission to perform operation
- *       400:
- *         description: Bad request, error updating
- *       401:
- *         description: Token not provided
- */
 
 router.delete('/delete-user/:userId', hasPermission('mod_delete_users'), async (req, res) => {
     try {
@@ -456,6 +274,188 @@ router.delete('/delete-user/:userId', hasPermission('mod_delete_users'), async (
     } catch (error) {
         res.status(400).json({ success: false, code: 344, message: 'Error deleting user ', error: error.message });
     }
+});
+
+
+
+// Files
+router.get('/files', hasPermission('mod_all_files'), async (req, res) => {
+    try {
+        let { page = 1, limit = process.env.MOD_PER_PAGE_FILES, sort = 'createdAt', order = 'desc' } = req.query;
+
+        // Validate and parse query parameters
+        page = parseInt(page);
+        limit = parseInt(limit);
+
+        if (isNaN(page) || page < 1) {
+            return res.status(400).json({ success: false, code: 301, message: 'Invalid page number' });
+        }
+
+        if (isNaN(limit) || limit < 1 || limit > 100) {
+            return res.status(400).json({ success: false, code: 302, message: 'Invalid limit value' });
+        }
+
+        const validSortFields = ['createdAt', 'updatedAt', 'mimetype', 'uploadedBy']; // Define valid sort fields
+        const validOrders = ['asc', 'desc']; // Define valid sort orders
+
+        if (!validSortFields.includes(sort) || !validOrders.includes(order)) {
+            return res.status(400).json({ success: false, code: 303, message: 'Invalid sort or order parameters' });
+        }
+
+        // Calculate skip
+        const skip = (page - 1) * limit;
+
+        // Fetch users from database excluding the password field
+        const files = await File.find({})
+            .sort({ [sort]: order })
+            .skip(skip)
+            .limit(limit);
+
+        const totalFiles = await File.countDocuments();
+
+        if (!files.length) {
+            return res.status(404).json({ success: false, code: 304, message: 'No users found' });
+        }
+
+        const fullFilesDetails = files.map(file => ({
+            ...file.toObject(),
+            readableSize: formatFileSize(file.size),
+            uri: `/files/download/${file._id}`
+        }));
+
+
+        res.status(200).json({ success: true, files: fullFilesDetails, code: 501, totalFiles: totalFiles });
+
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ success: false, code: 305, message: 'Error fetching users', error: error.message });
+    }
+});
+
+router.delete('/delete-file/:id', hasPermission('mod_delete_file'), async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Validate file ID
+        if (!id) {
+            return res.status(400).json({ success: false, code: 401, message: 'File ID is required' });
+        }
+
+        // Find the file by ID
+        const file = await File.findById(id);
+
+        if (!file) {
+            return res.status(404).json({ success: false, code: 402, message: 'File not found' });
+        }
+
+        // Construct the file path
+        const filePath = path.join(__dirname, '..', main_upload_folder, files_upload_folder, file.filename);
+
+        // Delete the file from the file system
+        fs.unlink(filePath, async (err) => {
+            if (err) {
+                console.error('Error deleting file from file system:', err);
+                return res.status(500).json({ success: false, code: 404, message: 'Error deleting file from the server, due to file not exists' });
+            }
+
+            // Delete the file entry from the database
+            await File.findByIdAndDelete(id);
+
+            // Return success response
+            res.status(200).json({ success: true, code: 503, message: 'File deleted successfully' });
+        });
+
+    } catch (error) {
+        console.error('Error deleting file:', error);
+        res.status(500).json({ success: false, code: 403, message: 'Error deleting file', error: error.message });
+    }
+});
+
+
+
+// Backup database
+
+router.get('/backup', hasPermission('mod_backup'), async (req, res) => {
+    try {
+        const db = mongoose.connection.db;
+        const collections = await db.listCollections().toArray();
+        const backupData = {};
+
+        for (let collection of collections) {
+            const collectionName = collection.name;
+            const collectionData = await db.collection(collectionName).find({}).toArray();
+            backupData[collectionName] = collectionData;
+        }
+
+        const backupFileName = `backup-${Date.now()}.json`;
+        const backupFilePath = path.join(__dirname, backupFileName);
+        const jsonBackup = JSON.stringify(backupData, null, 2);
+
+        // Encrypt the backup data
+        const encryptedBackup = encrypt(Buffer.from(jsonBackup));
+
+        fs.writeFileSync(backupFilePath, encryptedBackup);
+
+        res.download(backupFilePath, backupFileName, (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Error downloading the backup file');
+            }
+            // Optionally, delete the file after download
+            fs.unlinkSync(backupFilePath);
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Backup failed');
+    }
+});
+
+
+router.post('/restore', uploadMiddleware.single('restore'), hasPermission('mod_restore'), async (req, res) => {
+
+    try {
+        const backupFilePath = req.file.path;
+        const encryptedBackupData = fs.readFileSync(backupFilePath);
+
+        // Decrypt the backup data
+        const decryptionResult = await decrypt(encryptedBackupData);
+        if (!decryptionResult.success) {
+            return res.status(500).send(decryptionResult.message);
+        }
+
+        const backupData = JSON.parse(decryptionResult.buffer.toString());
+        const db = mongoose.connection.db;
+
+        // Sequentially restore each collection
+        for (const collectionName of Object.keys(backupData)) {
+            try {
+                // Drop the collection if it exists
+                await db.collection(collectionName).drop().catch((err) => {
+                    if (err.code !== 26) throw err; // Ignore "namespace not found" errors
+                });
+
+                await db.createCollection(collectionName);
+
+                const collectionData = backupData[collectionName].map(convertToObjectId);
+                if (collectionData.length > 0) {
+                    await db.collection(collectionName).insertMany(collectionData);
+                }
+
+                console.log(`Restored collection: ${collectionName}`);
+            } catch (err) {
+                console.error(`Failed to restore collection: ${collectionName}`, err);
+                return res.status(500).send(`Restore failed for collection: ${collectionName}`);
+            }
+        }
+
+        // Clean up the uploaded file
+        fs.unlinkSync(backupFilePath);
+        res.send('Database restored successfully');
+    } catch (error) {
+        console.error('Restore error:', error);
+        res.status(500).send('Restore failed');
+    }
+
 });
 
 module.exports = router;

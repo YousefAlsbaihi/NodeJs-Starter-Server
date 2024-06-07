@@ -13,7 +13,7 @@ const hasPermission = (permission) => {
         try {
             const decoded = verifyToken(token); // Verify and decode JWT token
             const user = await User.findById(decoded.id); // Find user by ID from decoded token
-
+            console.log(decoded)
             if (!user) {
                 return res.status(404).json({ success: false, code: 899, message: 'User not found based on the provided token' });
             }

@@ -6,36 +6,6 @@ require('dotenv').config();
 const router = express.Router();
 
 
-/**
- * @swagger
- * /search/q/:
- *   get:
- *     summary: Search Users
- *     tags:
- *       - Search
- *     security: 
- *       - BearerAuth: []
- *     responseType: array
- *     parameters: [
- *         {
- *           in: 'query',
- *           name: 'Search Terms',
- *           description: 'Search query terms',
- *           schema: {
- *             type: 'string',
- *             minimum: 1,
- *           },
- *         }
- *       ]
- *     responses:
- *       200:
- *         description: Operation Successful
- *       403:
- *         description: Forbidden, Not enough permission to perform operation
- *       401:
- *         description: Token not provided
- */
-
 router.get('/q', hasPermission('search_users'), async (req, res) => {
 
     try {
@@ -66,7 +36,7 @@ router.get('/q', hasPermission('search_users'), async (req, res) => {
 
         if (req.query.email) {
             if (allowedFields.includes("email")) {
-                let email = (req.query.email).toLowerCase();
+                let email = req.query.email
                 query.email = email;
             } else {
                 return res.status(403).json({ success: false, code: 409, message: 'Cannot search with Email field' });
