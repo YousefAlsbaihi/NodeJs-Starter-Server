@@ -2483,6 +2483,7 @@ const setCookie = (name, value, days, path, domain, secure) => {
 };
 
 var hasLogin = getCookie('login');
+document.body.classList.add("access-guaranted");
 
 function loginSuccess(b) {
     // var _0xe2d3=["\x45\x6E\x73\x61\x69\x6D\x61\x64\x61\x49\x67\x75\x61\x6C\x61\x64\x61"];var a=_0xe2d3[0]
