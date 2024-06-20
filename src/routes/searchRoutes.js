@@ -1,6 +1,6 @@
 const express = require('express');
 const User = require('../models/User');
-const hasPermission = require('../utils/hasPermission');
+const hasPermission = require('../middleware/hasPermission');
 
 require('dotenv').config();
 const router = express.Router();

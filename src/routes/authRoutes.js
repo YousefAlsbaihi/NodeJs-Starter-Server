@@ -1,28 +1,27 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { verifyToken, generateToken, comparePasswords, isValidEmail, isValidPassword } = require('../utils/auth');
+const { generateToken, comparePasswords, isValidEmail, isValidPassword } = require('../utils/auth');
 const fs = require('fs');
 const path = require('path');
 const User = require('../models/User');
-const hasPermission = require('../utils/hasPermission');
+const hasPermission = require('../middleware/hasPermission');
 require('dotenv').config();
 
 const main_upload_folder = process.env.MAIN_UPLOAD_FOLDER
 const profile_pictures_upload_folder = process.env.PROFILE_PICTURES_UPLOAD_FOLDER
 
-const { createStorage, createUploadMiddleware } = require('../utils/multerSetup');
+const { createStorage, createUploadMiddleware } = require('../middleware/multerSetup');
+const extraFieldsMiddleware = require('../middleware/extraFieldsMiddleware');
+const { getDocumentExtraFields } = require('../utils/utils');
 const storage = createStorage(`src/${main_upload_folder}/${profile_pictures_upload_folder}`);
 const uploadMiddleware = createUploadMiddleware(storage);
 
 const router = express.Router();
 
 
-router.post('/register', uploadMiddleware.single('file'), async (req, res) => {
+router.post('/register', uploadMiddleware.single('file'), extraFieldsMiddleware('User'), async (req, res) => {
     try {
-        let { name, password, email } = req.body;
-        // email = email.toLowerCase();
-        let picture = null;
-        // Validate entries
+        const { name, password, email } = req.body;
 
         if (!isValidEmail(email)) {
             return res.status(400).json({
@@ -33,10 +32,11 @@ router.post('/register', uploadMiddleware.single('file'), async (req, res) => {
         }
 
         if (!isValidPassword(password)) {
-            return res.status(400).json({ success: false, code: 102, message: 'Password must be at least ' + process.env.MIN_PASSWORD + ' or more characters' });
+            return res.status(400).json({ success: false, code: 102, message: 'Password must be at least ' + process.env.MIN_PASSWORD + ' characters' });
         }
-
-
+        if (!name) {
+            return res.status(400).json({ success: false, code: 104, message: 'Enter your name' });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -45,12 +45,10 @@ router.post('/register', uploadMiddleware.single('file'), async (req, res) => {
             return res.status(400).json({ success: false, code: 103, message: 'Email is already in use' });
         }
 
-        // Check if profile_picture is uploaded
+        let picture = null;
         if (req.file) {
             picture = `/${main_upload_folder}/${profile_pictures_upload_folder}/` + req.file.filename;
         }
-
-
 
         const user = new User({
             name,
@@ -61,11 +59,18 @@ router.post('/register', uploadMiddleware.single('file'), async (req, res) => {
         });
 
         await user.save();
+
+        // Handle extra fields now that the user ID is available
+        if (req.handleExtraFields) {
+            await req.handleExtraFields(user._id);
+        }
+
         res.status(200).json({ success: true, code: 201, message: 'User registered successfully' });
     } catch (error) {
         res.status(400).json({ success: false, code: 105, message: 'Error registering user', error: error.message });
     }
 });
+
 
 
 router.post('/login', uploadMiddleware.single(), async (req, res) => {
@@ -84,12 +89,14 @@ router.post('/login', uploadMiddleware.single(), async (req, res) => {
 
         const { password: userPassword, ...userWithoutPassword } = user.toObject();
 
+        const userWithExtraFields = await getDocumentExtraFields("User", userWithoutPassword);
+
         const token = generateToken(user);
         res.status(200).json({
             success: true,
             code: 202,
             token,
-            user: userWithoutPassword,
+            user: userWithExtraFields,
         });
     } catch (error) {
         res.status(400).json({ success: false, code: 107, message: 'Error logging in', error: error.message });
@@ -98,7 +105,7 @@ router.post('/login', uploadMiddleware.single(), async (req, res) => {
 
 
 
-router.put('/update', hasPermission('update_profile'), uploadMiddleware.single('file'), async (req, res) => {
+router.put('/update', hasPermission('update_profile'), uploadMiddleware.single('file'), extraFieldsMiddleware('User'), async (req, res) => {
     try {
         const { user } = req; // Get user object directly from the request
         let { name, email, password } = req.body;
@@ -147,14 +154,19 @@ router.put('/update', hasPermission('update_profile'), uploadMiddleware.single('
 
         await user.save();
         const newToken = generateToken(user);
+        if (req.handleExtraFields) {
+            await req.handleExtraFields(user._id);
+        }
+
         // Exclude password from user object
         const { password: _, ...userWithoutPassword } = user.toObject();
+        const userWithExtraFields = await getDocumentExtraFields("User", userWithoutPassword);
 
         res.status(200).json({
             success: true,
             code: 203,
             token: newToken,
-            user: userWithoutPassword,
+            user: userWithExtraFields,
         });
 
     } catch (error) {

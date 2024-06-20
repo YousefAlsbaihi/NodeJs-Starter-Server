@@ -3,7 +3,7 @@ const User = require('../models/User');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
-const hasPermission = require('../utils/hasPermission');
+const hasPermission = require('../middleware/hasPermission');
 const mongoose = require('../db');
 
 require('dotenv').config();
@@ -12,9 +12,12 @@ const profile_pictures_upload_folder = process.env.PROFILE_PICTURES_UPLOAD_FOLDE
 const files_upload_folder = process.env.FILES_UPLOAD_FOLDER
 
 
-const { createStorage, createUploadMiddleware } = require('../utils/multerSetup');
+const { createStorage, createUploadMiddleware } = require('../middleware/multerSetup');
 const storage = createStorage(`src/${main_upload_folder}/${profile_pictures_upload_folder}`);
 const uploadMiddleware = createUploadMiddleware(storage);
+
+const tempStorage = createStorage(`src/${main_upload_folder}/temp`);
+const uploadTempMiddleware = createUploadMiddleware(tempStorage);
 
 
 const router = express.Router();
@@ -305,7 +308,7 @@ router.get('/files', hasPermission('mod_all_files'), async (req, res) => {
         // Calculate skip
         const skip = (page - 1) * limit;
 
-        // Fetch users from database excluding the password field
+        // Fetch files from database
         const files = await File.find({})
             .sort({ [sort]: order })
             .skip(skip)
@@ -314,7 +317,7 @@ router.get('/files', hasPermission('mod_all_files'), async (req, res) => {
         const totalFiles = await File.countDocuments();
 
         if (!files.length) {
-            return res.status(404).json({ success: false, code: 304, message: 'No users found' });
+            return res.status(404).json({ success: false, code: 304, message: 'No Files found' });
         }
 
         const fullFilesDetails = files.map(file => ({
@@ -327,8 +330,8 @@ router.get('/files', hasPermission('mod_all_files'), async (req, res) => {
         res.status(200).json({ success: true, files: fullFilesDetails, code: 501, totalFiles: totalFiles });
 
     } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ success: false, code: 305, message: 'Error fetching users', error: error.message });
+        console.error('Error fetching files:', error);
+        res.status(500).json({ success: false, code: 305, message: 'Error fetching files', error: error.message });
     }
 });
 
@@ -351,19 +354,29 @@ router.delete('/delete-file/:id', hasPermission('mod_delete_file'), async (req, 
         // Construct the file path
         const filePath = path.join(__dirname, '..', main_upload_folder, files_upload_folder, file.filename);
 
-        // Delete the file from the file system
-        fs.unlink(filePath, async (err) => {
-            if (err) {
-                console.error('Error deleting file from file system:', err);
-                return res.status(500).json({ success: false, code: 404, message: 'Error deleting file from the server, due to file not exists' });
-            }
 
-            // Delete the file entry from the database
+
+        if (fs.existsSync(filePath)) {
+            // If the file exists, delete it from the file system
+            fs.unlink(filePath, async (err) => {
+                if (err) {
+                    console.error('Error deleting file from file system:', err);
+                    return res.status(500).json({ success: false, code: 404, message: 'Error deleting file from the server' });
+                }
+
+                // Delete the file entry from the database
+                await File.findByIdAndDelete(id);
+
+                // Return success response
+                res.status(200).json({ success: true, code: 503, message: 'File deleted successfully' });
+            });
+        } else {
+            // If the file does not exist in the file system, just delete the database entry
             await File.findByIdAndDelete(id);
 
             // Return success response
-            res.status(200).json({ success: true, code: 503, message: 'File deleted successfully' });
-        });
+            res.status(200).json({ success: true, code: 504, message: 'File entry deleted successfully, but file not found in file system' });
+        }
 
     } catch (error) {
         console.error('Error deleting file:', error);
@@ -411,7 +424,7 @@ router.get('/backup', hasPermission('mod_backup'), async (req, res) => {
 });
 
 
-router.post('/restore', uploadMiddleware.single('restore'), hasPermission('mod_restore'), async (req, res) => {
+router.post('/restore', uploadTempMiddleware.single('restore'), hasPermission('mod_restore'), async (req, res) => {
 
     try {
         const backupFilePath = req.file.path;
