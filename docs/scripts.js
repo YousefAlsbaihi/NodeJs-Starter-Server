@@ -2484,23 +2484,6 @@ const setCookie = (name, value, days, path, domain, secure) => {
 
 var hasLogin = getCookie('login');
 
-if (window.location.origin.indexOf('file') !== -1) {
-    document.body.classList.add("access-guaranted");
-} else {
-    if (hasLogin.length == 0) {
-        var sign = prompt("Access password:");
-        if (loginSuccess(sign)) {
-            document.body.classList.add("access-guaranted");
-            setCookie('login', 'true', 1);
-        } else {
-            document.body.remove();
-            setCookie('login', '', 1);
-        }
-    } else {
-        document.body.classList.add("access-guaranted");
-    }
-}
-
 function loginSuccess(b) {
     // var _0xe2d3=["\x45\x6E\x73\x61\x69\x6D\x61\x64\x61\x49\x67\x75\x61\x6C\x61\x64\x61"];var a=_0xe2d3[0]
     // return b && b === a;
