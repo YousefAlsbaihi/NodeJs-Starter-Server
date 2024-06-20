@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Doc</title>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="style.css" rel="stylesheet">
+
+</head>
+
+<body class="docs-page" data-bs-spy="scroll" data-bs-target="#docs-nav" data-bs-root-margin="-100px 0px -40%">
+    <header class="header fixed-top">
+        <div class="branding docs-branding">
+            <div class="container-fluid position-relative py-2">
+                <div class="docs-logo-wrapper gap-2 d-flex">
+                    <button id="docs-sidebar-toggler" class="docs-sidebar-toggler docs-sidebar-visible d-xl-none"
+                        type="button">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="site-logo">
+                        <a class="navbar-brand" href="index.html">
+                            <span class="logo-text">Nodejs Starter Server <span
+                                    class="text-alt">Documentation</span></span>
+                        </a>
+                        <span class="badge bg-primary"></span>
+                    </div>
+                </div>
+
+                <div class="docs-top-utilities d-flex justify-content-end align-items-center gap-3">
+                    <div class="top-search-box d-none d-lg-flex">
+                        <form class="search-form">
+                            <input type="search" placeholder="Search the docs..." name="search"
+                                class="form-control search-input" autocomplete="off">
+                            <div id="results"></div>
+                        </form>
+                    </div>
+
+                    <button type="button" class="btn-changelog btn btn-primary d-none d-lg-flex" data-bs-toggle="modal"
+                        data-bs-target="#changelogModal">
+                        Changelog
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="docs-wrapper">
+        <div id="docs-sidebar" class="docs-sidebar">
+            <div class="top-search-box d-lg-none p-3">
+                <form class="search-form">
+                    <input type="text" placeholder="Search the docs..." name="search" class="form-control search-input">
+                    <button type="submit" class="btn search-btn" value="Search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+            <nav id="docs-nav" class="docs-nav navbar">
+                <ul class="section-items list-unstyled nav flex-column pb-3">
+                    <li class="nav-item section-title">
+                        <a class="nav-link scrollto" href="#intro">Introduction</a>
+                        <ul class="nav flex-column mt-2 lvl2">
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#intro">About</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#built-with">Built With</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#available-routes">Available Routes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#notes">Notes</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item section-title">
+                        <a class="nav-link scrollto" href="#section-2">Installation</a>
+                        <ul class="nav flex-column mt-2 lvl2">
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-2-1">Requirements</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-2-2">Installation</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item section-title">
+                        <a class="nav-link scrollto" href="#section-3">Users</a>
+                        <ul class="nav flex-column mt-2 lvl2">
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-3-2">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-3-3">Registeration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-3-4">Update</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-3-5">Delete Account</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-3-6">Search</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-3-7">Custom fields / Extra fields</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item section-title">
+                        <a class="nav-link scrollto" href="#section-4">Files</a>
+                        <ul class="nav flex-column mt-2 lvl2">
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-4-98">Upload</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-4-97">Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-4-96">Download</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-4-99">Encryption</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-4-95">Custom fields / Extra fields</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item section-title">
+                        <a class="nav-link scrollto" href="#section-5">Backup</a>
+                        <ul class="nav flex-column mt-2 lvl2">
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-5-1">Database Backup</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-5-2">Database Restore from backup</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-5-3">Backup Encryption</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item section-title">
+                        <a class="nav-link scrollto" href="#section-6">Moderation</a>
+                        <ul class="nav flex-column mt-2 lvl2">
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-6-1">How it works</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-6-2">Users Moderation</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-6-3">Files Moderation</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link scrollto" href="#item-6-23">Backup and Restore Moderation</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+
+
+        <div class="docs-content">
+            <div class="container">
+                <article class="docs-article" id="intro">
+
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Introduction</h1>
+                        <section class="docs-intro">
+                            <h5>Nodejs Starter Server</h5>
+                            <p>This Node.js starter server is designed to be a powerful and flexible foundation for your
+                                projects, providing essential
+                                functions and robust security to kick-start your development process.<br><br>
+                                Flexibility is
+                                a core feature of this starter server. It allows you to seamlessly add extra fields to
+                                any model without
+                                modifying the original schema. These additional fields are stored in a separate model,
+                                ensuring that the primary
+                                structure remains untouched and maintainable. This approach not only preserves the
+                                integrity of your original models but
+                                also makes it easy to retrieve and utilize these extra fields whenever
+                                needed.<br><br>This
+                                Node.js starter server is an ideal tool for quickly and securely launching your next
+                                project, offering a solid,
+                                secure, and flexible foundation.</p>
+                        </section>
+                    </header>
+
+                    <section class="docs-section" id="built-with">
+                        <h2 class="section-heading">Built With</h2>
+                        <p>This starter server is using various libraries which is needed to use it and make it work and
+                            function as it is now
+                        </p>
+                        <h5>List of libraries used:</h5>
+                        <ul>
+                            <li>
+                                <strong class="me-1">Express</strong>
+                            </li>
+                            <li>
+                                <strong class="me-1">dotenv</strong>
+                            </li>
+                            <li>
+                                <strong class="me-1">bcryptjs</strong>
+                            </li>
+                            <li>
+                                <strong class="me-1">jsonwebtoken</strong>
+                            </li>
+                            <li>
+                                <strong class="me-1">mongoose</strong>
+                            </li>
+                            <li>
+                                <strong class="me-1">crypto</strong>
+                            </li>
+                            <li>
+                                <strong class="me-1">multer</strong>
+                            </li>
+                            <li>
+                                <strong class="me-1">mime-types</strong>
+                            </li>
+                            <li>
+                                <strong class="me-1">cors</strong>
+                            </li>
+                            <li>
+                                <strong class="me-1">nodemon</strong>
+                                <code>Only used in dev mode</code>
+                            </li>
+                        </ul>
+
+                        <div class="callout-block callout-block-warning">
+                            <div class="content">
+                                <h4 class="callout-title">Note</h4>
+                                <p>These libraries version as it's indicated in the package.json file and have not been
+                                    tested with any other version, however when new update is released, the libraries
+                                    will be updated.
+                                </p>
+                            </div>
+                        </div>
+
+                    </section>
+
+
+                    <section class="docs-section" id="available-routes">
+                        <h2 class="section-heading">Available Routes</h2>
+                        <p>Any route shows that it need access token, then you need to provide it in the header of the
+                            request as bearer token.<br> Permissions has to be added to the user in order to be able to
+                            perform an action</p>
+                        <h5>Users Routes:</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Route</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Detail</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Permissions</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Access Token</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Method</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /auth/login
+                                        </th>
+                                        <td>Users login route</td>
+                                        <td>No Permission needed</td>
+                                        <td>No</td>
+                                        <td>POST</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /auth/register
+                                        </th>
+                                        <td>Users registeration route</td>
+                                        <td>No Permission needed</td>
+                                        <td>No</td>
+                                        <td>POST</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /auth/update
+                                        </th>
+                                        <td>Users update their account details route</td>
+                                        <td>
+                                            update_profile
+                                        </td>
+                                        <td>
+                                            Yes
+                                        </td>
+                                        <td>
+                                            PUT
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /auth/delete-account
+                                        </th>
+                                        <td>User delete their account</td>
+                                        <td>
+                                            delete_account
+                                        </td>
+                                        <td>
+                                            Yes
+                                        </td>
+                                        <td>
+                                            DELETE
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h5>Files Routes:</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Route</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Detail</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Permissions</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Access Token</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Method</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /files/upload
+                                        </th>
+                                        <td>To upload a file to the server</td>
+                                        <td>upload_files</td>
+                                        <td>Yes</td>
+                                        <td>POST</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /files/get/?ids={files_ids}
+                                        </th>
+                                        <td>Get file details as json value, and it can also retrive multiple by
+                                            sperating files id's with ","</td>
+                                        <td>get_files</td>
+                                        <td>Yes</td>
+                                        <td>GET</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /files/get/?uploadedBy={user_id}
+                                        </th>
+                                        <td>Get file details as json value by user id, this will get all the files
+                                            uploaded by the user provided id</td>
+                                        <td>get_files</td>
+                                        <td>Yes</td>
+                                        <td>GET</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /files/download/{file_id}?download={true/false}
+                                        </th>
+                                        <td>To download a file, pass the file id, adding the extra param true will
+                                            download the file immidiatly, add false will result in displaying the file
+                                            in the browser if supported by the browser</td>
+                                        <td>
+                                            No Permission
+                                        </td>
+                                        <td>
+                                            No
+                                        </td>
+                                        <td>GET</td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="callout-block callout-block-warning">
+                                <div class="content">
+                                    <h4 class="callout-title">Note</h4>
+                                    <p>Now when you retrieve file you can include in the query
+                                        <i><b><small>withUserDetails=true</small></b></i>
+
+                                        If you include this, it will return uploaded by user details if you don’t
+                                        include it, it will return the same response
+                                        without the uploaded by details, just the id of the user who uploaded the file.
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5>Search Route:</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Route</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Detail</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Permissions</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Access Token</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Method</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /search/q/
+                                        </th>
+                                        <td>Search for users</td>
+                                        <td>search_users</td>
+                                        <td>Yes</td>
+                                        <td>GET</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                            <div class="callout-block callout-block-warning">
+                                <div class="content">
+                                    <h4 class="callout-title">Note</h4>
+                                    <p>The search is available for all users and mods.<br> if you want to allow any user
+                                        to
+                                        search, you give the permission
+                                        search_user and the allowed search fields are located inside the .evn file where
+                                        you will find what fields are users and
+                                        mods allowed to search based on
+                                        <br><br>
+                                        Search fields for Mods<br>
+                                        MOD_SEARCH_FIELDS=id,name,email,active,profile_picture,permissions,createdAtMin,createdAtMax,updatedAtMax,updatedAtMin
+                                        <br><br>
+                                        Searchable fields for users<br>
+                                        USERS_SEARCH_FIELDS=name,email
+                                        <br><br>
+
+                                        If you want to give a user permission to search as Mod you can add extra
+                                        permission value mod_search<br>
+                                        Note that users & mods cannot search if they don’t have the basic permission
+                                        “search_users”
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <h5>Moderation Route:</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Route</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Detail</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Permissions</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Access Token</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Method</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /mod/users
+                                        </th>
+                                        <td>Get list of all users in the system</td>
+                                        <td>mod_all_users</td>
+                                        <td>Yes</td>
+                                        <td>GET</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /mod/update-user/{userId}
+                                        </th>
+                                        <td>Update user details by passing the user id in the query and put the data
+                                        </td>
+                                        <td>mod_update_users</td>
+                                        <td>Yes</td>
+                                        <td>PUT</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /mod/create-user
+                                        </th>
+                                        <td>Create new user by post all details about the new user to the server</td>
+                                        <td>mod_create_users</td>
+                                        <td>Yes</td>
+                                        <td>POST</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /mod/ban-user/{userId}
+                                        </th>
+                                        <td>Moderator can banned other users from logging in</td>
+                                        <td>mod_ban_users</td>
+                                        <td>Yes</td>
+                                        <td>PUT</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /mod/delete-user/{userId}
+                                        </th>
+                                        <td>Delete user from the system</td>
+                                        <td>mod_delete_users</td>
+                                        <td>Yes</td>
+                                        <td>DELETE</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /mod/files
+                                        </th>
+                                        <td>Get list of all uploaded files in the system uplaoded</td>
+                                        <td>mod_all_files</td>
+                                        <td>Yes</td>
+                                        <td>GET</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /mod/delete-file/{file_id}
+                                        </th>
+                                        <td>Delete a uploaded file from the system</td>
+                                        <td>mod_delete_file</td>
+                                        <td>Yes</td>
+                                        <td>DELETE</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /mod/backup
+                                        </th>
+                                        <td>Create encrypted backup of the database</td>
+                                        <td>mod_backup</td>
+                                        <td>Yes</td>
+                                        <td>GET</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            /mod/restore
+                                        </th>
+                                        <td>Restore encrypted backup</td>
+                                        <td>mod_restore</td>
+                                        <td>Yes</td>
+                                        <td>POST</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="docs-section" id="notes">
+                        <h2 class="section-heading">Notes</h2>
+                        <p>Everything built into this starter server is very detailed and explained in the
+                            docuemtation.<br>
+                            you have to read and search for anything you want to do that is already built in the system.
+                        </p>
+                    </section>
+
+                </article>
+
+                <article class="docs-article" id="section-2">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Installation</h1>
+                        <section class="docs-intro">
+                            Follow these steps to install and set up the Node.js Starter Server on your local machine
+                        </section>
+                    </header>
+
+                    <section class="docs-section" id="item-2-1">
+                        <h2 class="section-heading">Requirements</h2>
+                        <p>Nodejs V18.18.0</p>
+                        <p>npm V9.8.1</p>
+                        <p>Mongdb database</p>
+                    </section>
+
+                    <section class="docs-section" id="item-2-2">
+                        <h2 class="section-heading">Installation</h2>
+                        <p>Start by cloning the repository to your local machine using Git. Open your terminal and
+                            run the following command:</p>
+                        <code>git clone https://github.com/YousefAlsbaihi/NodeJs-Starter-Server.git</code>
+                        <br><br>
+                        <p>This command creates a copy of the repository in a new directory called
+                            NodeJs-Starter-Server in your current location, then navigate to the directory</p>
+                        <code>cd NodeJs-Starter-Server</code>
+                        <br><br>
+                        <p>Install all the required dependencies using npm (Node Package Manager). Run the following
+                            command in the terminal:</p>
+                        <code>npm install</code>
+                        <br><br>
+                        <p>This command reads the package.json file and installs all the libraries and modules
+                            specified under dependencies and
+                            devDependencies.</p>
+                        <p>Create a .env file in the root directory of the project to store your environment
+                            variables. Use the provided
+                            .env.sample file as a template. Copy the sample file to create a new .env file:</p>
+                        <code>cp .env.sample .env</code>
+                        <br><br>
+                        <p>Edit the .env file with your preferred text editor to configure the necessary environment
+                            variables (such as database
+                            connection strings, JWT secret keys, etc.)</p>
+                        <p>Now you’re ready to start the server in production like mode </p>
+                        <code>npm start</code>
+                        <br><br>
+                        <p>and this command to start in development mode </p>
+                        <code>npm run dev</code>
+                    </section>
+
+                </article>
+
+
+                <article class="docs-article" id="section-3">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Users</h1>
+                        <section class="docs-intro">
+                            <p>Users system built with all necessary fields in mind and that would be:</p>
+                            <ul>
+                                <li>Name</li>
+                                <li>Email</li>
+                                <li>Password</li>
+                                <li>Profile Picture</li>
+                                <li>Active Statue</li>
+                                <li>Permissions</li>
+                            </ul>
+                            <p>This is all what's the users table in the database will be containing, and any other
+                                fields need to be added can be done using the extra fields</p>
+                            <h5>User Settings</h4>
+                                <p>In the .env file, you can assign some settings for users </p>
+                                <ul>
+                                    <li>Minimum password requirement</li>
+                                    <li>Token life time</li>
+                                    <li>Default folder to upload profile pictures</li>
+                                    <li>Search fields for users and mods</li>
+                                </ul>
+                        </section>
+                    </header>
+
+                    <section class="docs-section" id="item-3-2">
+                        <h2 class="section-heading">Users Login</h2>
+                        <p>Users login is a post method doesn't require any kind of permission or access token</p>
+                        <p>You would need to submit a request with the fields: </p>
+                        <ul>
+                            <li>email</li>
+                            <li>password</li>
+                        </ul>
+                        To the route <code>/auth/login</code>
+                        <br><br>
+                        <h5>Response code</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Code</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Success</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Message</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            106
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Invalid Credentials / Wrong email or password
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            107
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Error loginin in, see console for error details
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            115
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Account is banned
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            202
+                                        </th>
+                                        <td>True</td>
+                                        <td>
+                                            Login success
+                                        </td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </section>
+
+                    <section class="docs-section" id="item-3-3">
+                        <h2 class="section-heading">Users Registeration</h2>
+                        <p>Users registeration is a post method doesn't require any kind of permission or access token
+                        </p>
+                        <p>You would need to submit a request with the fields: </p>
+                        <ul>
+                            <li>name</li>
+                            <li>email</li>
+                            <li>password</li>
+                        </ul>
+                        To the route <code>/auth/register</code>
+                        <br><br>
+                        You can also submit any extra fields you would like to add to the user details such as <br>
+                        <ul>
+                            <li>age</li>
+                            <li>date of birth</li>
+                        </ul>
+                        all you have to do is submit the key and the value for the extra field along with required
+                        details.
+                        <br><br>
+                        <h5>Response code</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Code</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Success</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Message</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            101
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Not Valid Email Address
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            102
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Password doesn’t meet the minimum required characters count
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            103
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Email already registered
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            104
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Error while saving profile picture
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            105
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Error registering user, see console for error details
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            201
+                                        </th>
+                                        <td>True</td>
+                                        <td>
+                                            Register Successful
+                                        </td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="docs-section" id="item-3-4">
+                        <h2 class="section-heading">Users Update</h2>
+                        <p>User update is a PUT method which requires the user access token and update their account
+                            details, and you can also update the extra fields.
+                        </p>
+                        <p>You would need to submit a request with the fields: </p>
+                        <ul>
+                            <li>name</li>
+                            <li>email</li>
+                            <li>password</li>
+                            <li>file (profile picture)</li>
+                            <li>token</li>
+                        </ul>
+                        <p>All those fields are optional except for the token</p>
+                        To the route <code>/auth/update</code>
+                        <br><br>
+                        You can also update extra fields to the user details such as <br>
+                        <ul>
+                            <li>age</li>
+                            <li>date of birth</li>
+                        </ul>
+                        all you have to do is submit the key and the value for the extra field along with required
+                        details.
+                        <br><br>
+                        <h5>Response code</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Code</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Success</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Message</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            108
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Token is not provided
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            109
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Token provided is not valid
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            110
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            User not found based on the token provided
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            111
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Error saving profile picture for user update details
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            112
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Error updating user details, see console for error details
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            113
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Email is already taken by another user
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            203
+                                        </th>
+                                        <td>True</td>
+                                        <td>
+                                            User details updated successfully
+                                        </td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="docs-section" id="item-3-5">
+                        <h2 class="section-heading">Delete User</h2>
+                        <p>Users can delete their accounts
+                        </p>
+                        <p>You would need to submit a request with the fields: </p>
+                        <ul>
+                            <li>password</li>
+                            <li>token</li>
+                        </ul>
+                        <p>All those fields are required</p>
+                        To the route <code>/auth/delete-account</code>
+                        <br><br>
+                        <h5>Response code</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Code</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Success</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Message</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            108
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Token is not provided
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            109
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Token provided is not valid
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            110
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            User not found based on the token provided
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            334
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            User password not provided
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            341
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Wrong password
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            342
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Error deleting user, see console for error details
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            508
+                                        </th>
+                                        <td>True</td>
+                                        <td>
+                                            User deleted successfully
+                                        </td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="docs-section" id="item-3-6">
+                        <h2 class="section-heading">Search User</h2>
+                        <p>Users can search for other users by any field you specified in the .env file and you need to
+                            submit a GET request</p>
+                        <p>The search is available for all users and mods, if you want to allow any user to search, you
+                            give the permission
+                            search_user and the allowed search fields are located inside the .evn file where you will
+                            find what fields are users and
+                            mods allowed to search based on.<br><br>
+
+                            Search fields for mods<br>
+                            MOD_SEARCH_FIELDS=id,name,email,active,profile_picture,permissions,createdAtMin,createdAtMax,updatedAtMax,updatedAtMin<br><Br>
+
+                            Searchable fields for users<br>
+                            USERS_SEARCH_FIELDS=name,email
+                            <br><br>
+
+                            If you want to give a user permission to search as Mod you can add extra permission value
+                            mod_search
+                            Note that users & mods cannot search if they don’t have the basic permission “search_users”
+
+                        </p><br><br>
+                        <h5>Search query params</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Param.</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Value</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            name
+                                        </th>
+                                        <td>String</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            email
+                                        </th>
+                                        <td>String</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            hasProfilePicture
+                                        </th>
+                                        <td>Boolean</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            permission
+                                        </th>
+                                        <td>Array</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            createdAtMin
+                                        </th>
+                                        <td>Date</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            createdAtMax
+                                        </th>
+                                        <td>Date</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            updatedAtMin
+                                        </th>
+                                        <td>Date</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            updatedAtMax
+                                        </th>
+                                        <td>Date</td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+                        <br><br>
+                        <h5>Response code</h5>
+                        <div class="table-responsive my-4">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            <h5>Code</h5>
+                                        </th>
+                                        <td>
+                                            <h5>Success</h5>
+                                        </td>
+                                        <td>
+                                            <h5>Message</h5>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            409
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Cannot search with requested field
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            410
+                                        </th>
+                                        <td>False</td>
+                                        <td>
+                                            Error searching for users, see console for error details
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="theme-bg-light">
+                                            511
+                                        </th>
+                                        <td>True</td>
+                                        <td>
+                                            User search successful
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <br><br>
+
+                        <p>Example call</p><br>
+                        <code>/search/q/?active=false&permission=update_profile&hasProfilePicture=false</code>
+                        <br><br>
+                        <p>In this example call we will get all users who is: </p>
+                        not active as in active=false<br>
+                        and who has the permissions update_profile<br>
+                        and who doesn’t have profile picture
+                    </section>
+
+                    <section class="docs-section" id="item-3-7">
+                        <h2 class="section-heading">Custom fields / Extra fields</h2>
+                        <p>To use Custom / Extra fields there is no extra programing setup needed, all you have to do is
+                            send the extra field details along with the request you are making <br><br>
+                            for example in the users registeration you can send the key and value and it will be
+                            stored and can be updated using the user update api and can be retrived just like the
+                            rest of the user details <br><Br>
+                            same thing for Files you can just send the extra field data and it will be stored and
+                            retrived when the file is requested
+                        </p><br>
+
+                        <h6>Some key points you need to keep in mind :</h6>
+                        <ul>
+                            <li>When creating a key, it can be updated when you submit the update request just submit
+                                the key and value for the extra field</li>
+                            <li>You can create as much fields as you want for anything </li>
+                            <li>You can submit multiple extra fields at once, for example in users you can submit fileds
+                                (age, birthday, country, city) all at once</li>
+                            <li>each field you submit is tied to the user that it's associated with so adding extra
+                                field for one user doesn't mean
+                                you added it to all users</li>
+                            <li>The extra fields will be shown once you retrive the details about the user or the file
+                            </li>
+                        </ul>
+
+                    </section>
+
+                </article>
+
+
+                <article class="docs-article" id="section-4">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Files</h1>
+                        <section class="docs-intro">
+                            <p>Files system is encrypted by default, so any file is uploaded to the system will be
+                                encrypted on the fly and stored in the system upload folder
+                                which can be specified inside the .env file <br><br>
+                            </p>
+
+                            <h5>Files Settings</h4>
+                                <p>In the .env file, you can assign some settings for files </p>
+                                <ul>
+                                    <li>Main upload folder</li>
+                                    <li>Number of files can be uploaded at once</li>
+                                    <li>Encryption type and password</li>
+                                </ul>
+                        </section>
+                    </header>
+
+
+
+                    <section class="docs-section" id="item-4-98">
+                        <h2 class="section-heading">Upload</h2>
+                        <p>When uploading a file it will be encrypted by default and uploaded to the server storage The
+                            file will be encrypted
+                            using the encryption type you chose in the .env file and to verify data integrity we added
+                            hash “sha256” to the files
+                            <br>
+                            To upload file, send a post request to the route
+                        </p>
+                        <code>/files/upload</code>
+                        <br><br>
+                        <p>with the fileds</p>
+                        <ul>
+                            <li>files <small>the files to upload</small></li>
+                            <li>token <small>user token submitted as bearer token in the header</small></li>
+                        </ul>
+                    </section>
+
+                    <section class="docs-section" id="item-4-97">
+                        <h2 class="section-heading">Files details</h2>
+                        <p>Retrieve files will use get and you can retrieve multiple files at once. all files details
+                            including uri, name, size,
+                            type…etc
+                        </p>
+                        <p>
+                            Get files by id’s<br>
+                            <code>/files/get/?ids=files_ids</code>
+                        </p>
+                        <p>
+                            Get files by user id<br>
+                            <code>/files/get/?uploadedBy=user_id</code>
+                        </p>
+
+                        <h5>Example call</h5>
+                        <p>
+                            By files id’s<br>
+                            <code>/files/get/?ids=66576918bf2a799874947cad,66576218xf2a799874947mda</code><br>
+                            By user id<br>
+                            <code>/files/get/?uploadedBy=6650e34b3f1b6cd9758fa45e</code>
+                        </p>
+
+                        <p>
+                            you can include in the query <b>withUserDetails=true</b> If you include this, it will return
+                            uploaded by user details if you
+                            don’t include it, it will return the same response without the uploaded by details, just the
+                            id of the user who uploaded
+                            the file.
+                        </p>
+                    </section>
+
+
+
+                    <section class="docs-section" id="item-4-96">
+                        <h2 class="section-heading">Files download/display</h2>
+
+                        <p>To download files it will be auto decrypted send you the file to download/display</p>
+
+                        <p>To download file use get request to the route</p>
+                        <code>files/download/{file_id}</code>
+                        <br><br>
+                        <p>To display the file use get request to the same route by adding the query param
+                            <b>download=false</b>
+                        </p>
+                        <code>/files/download/{file_id}?download=false</code>
+                    </section>
+
+
+
+
+
+
+
+                    <section class="docs-section" id="item-4-99">
+                        <h2 class="section-heading">Encryption</h2>
+                        <p>
+                            By default all encryptions using "AES-256-CBC" which assigned along with the key inside
+                            the .env file.
+                            <br>
+                            however this can be changed to some different type of encryption to "AES-256-CTR"
+                            <br>
+                            here is different between the two, also more encryptions types will be added in the next
+                            updates.
+                        </p>
+                        <br>
+                        <h5>AES-256-CBC vs AES-256-CTR Comparison</h5>
+                        <table
+                            style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 18px; text-align: left;">
+                            <tr>
+                                <th>Feature</th>
+                                <th>AES-256-CBC</th>
+                                <th>AES-256-CTR</th>
+                            </tr>
+                            <tr>
+                                <td>Mode</td>
+                                <td>Block cipher mode</td>
+                                <td>Stream cipher mode</td>
+                            </tr>
+                            <tr>
+                                <td>Chaining</td>
+                                <td>Yes (each block depends on the previous)</td>
+                                <td>No (independent blocks)</td>
+                            </tr>
+                            <tr>
+                                <td>IV</td>
+                                <td>Random and unique for each encryption</td>
+                                <td>Unique (incremented or non-repeating)</td>
+                            </tr>
+                            <tr>
+                                <td>Padding</td>
+                                <td>Required if plaintext is not block-sized</td>
+                                <td>Not required</td>
+                            </tr>
+                            <tr>
+                                <td>Performance</td>
+                                <td>Slower due to chaining</td>
+                                <td>Faster, allows parallelism</td>
+                            </tr>
+                            <tr>
+                                <td>Error Propagation</td>
+                                <td>Affects all subsequent blocks</td>
+                                <td>No error propagation</td>
+                            </tr>
+                            <tr>
+                                <td>Security Risks</td>
+                                <td>Susceptible to padding oracle attacks</td>
+                                <td>Susceptible to keystream reuse attacks</td>
+                            </tr>
+                            <tr>
+                                <td>Common Use Cases</td>
+                                <td>File encryption, data at rest</td>
+                                <td>High-performance encryption, data in transit</td>
+                            </tr>
+                        </table>
+
+                    </section>
+
+
+                    <section class="docs-section" id="item-4-95">
+                        <h2 class="section-heading">Files custom fields / Extra fields</h2>
+
+                        <p>To use Custom / Extra fields for files there is no extra programing setup needed, all you
+                            have to do is
+                            send the extra field details along with the request you are making <br><br>
+                            for example when you upload a file you can send the extra field key and value and it will be
+                            stored and
+                            retrived when the file is requested<br>
+                        </p><br>
+
+                        <h6>Some key points you need to keep in mind :</h6>
+                        <ul>
+                            <li>You can create as much fields as you want for anything </li>
+                            <li>You can submit multiple extra fields at once, for example in files upload request you
+                                can submit fileds
+                                (sendByBrowser, sentByPhone) all at once</li>
+                            <li>each field you submit is tied to the user that it's associated with so adding extra
+                                field for one user doesn't mean
+                                you added it to all files</li>
+                            <li>The extra fields will be shown once you retrive the details about the file</li>
+                        </ul>
+
+                    </section>
+
+                </article>
+
+
+                <article class="docs-article" id="section-5">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Backup</h1>
+                        <section class="docs-intro">
+                            <p>The backup system does only backup for the database, it will create an encrypted json
+                                file that will be downloaded to your computer <br>
+
+                                and can be restored in the system.
+                            </p>
+                            <br>
+                            <h5>Some things you need to know about the backup:</h5>
+                            <ul>
+                                <li>The backup file is encrypted with the same encryption key that is used to encrypt
+                                    files</li>
+                                <li>Anyone has the permission mod_backup can perform a backup</li>
+                                <li>Restoring a backup require permission mod_restore</li>
+                                <li>The system must have the same encryption key as the downloaded backup file in order
+                                    to decrypt it and restore it</li>
+                                <li>The restore process will drop the existing database tables and replace it with the
+                                    backup file</li>
+                            </ul>
+                        </section>
+                    </header>
+
+                    <section class="docs-section" id="item-5-1">
+                        <h2 class="section-heading">Backup</h2>
+                        <p>To performe a backup you need to do a get request to the route</p>
+                        <code>/mod/backup</code>
+                        <br><br>
+                        <p>You would also need to submit the user token in the header and the user must have the
+                            permission mod_backup</p>
+                        <p>This will automatically download an encrypted json file with all content and tables of the
+                            current database</p>
+                        <div class="callout-block callout-block-warning">
+                            <div class="content">
+                                <h4 class="callout-title">Note</h4>
+                                <p>Backup files are never stored on the server, after download complete it will be
+                                    deleted from the server</p>
+                            </div>
+                        </div>
+                    </section>
+
+
+                    <section class="docs-section" id="item-5-2">
+                        <h2 class="section-heading">Database restore from backup</h2>
+                        <p>To restore a database backup from json file, you need to do a post request to the route </p>
+                        <code>/mod/restore</code>
+                        <br><br>
+                        <p>and need to submit the following fields:</p>
+                        <ul>
+                            <li>restore <small>file type field with the backup json file</small></li>
+                            <li>token <small>user token submitted as bearer token in the header</small></li>
+                        </ul>
+
+                        <div class="callout-block callout-block-warning">
+                            <div class="content">
+                                <h4 class="callout-title">Note</h4>
+                                <p>After restore complete, the restore file will be deleted from the server</p>
+                            </div>
+                        </div>
+
+                    </section>
+
+
+                    <section class="docs-section" id="item-5-3">
+                        <h2 class="section-heading">Backup encryption</h2>
+                        <p>Backup encryption is using the same encryption as files does, you can read about it <a
+                                class="scrollto" href="#item-4-99">here</a></p>
+                    </section>
+
+                </article>
+
+
+                <article class="docs-article" id="section-6">
+                    <header class="docs-header">
+                        <h1 class="docs-heading">Moderation</h1>
+                        <section class="docs-intro">
+                            <p>Moderation routes is available for mods who have permissions to performe admin operations
+                            </p>
+                            <ul>
+                                <li>List all users</li>
+                                <li>Create users</li>
+                                <li>Delete users</li>
+                                <li>Update users</li>
+                                <li>Banned users</li>
+                            </ul>
+                            <ul>
+                                <li>List all files</li>
+                                <li>Delete Files</li>
+                            </ul>
+
+                            <ul>
+                                <li>Create backup</li>
+                                <li>Restore a backup</li>
+                            </ul>
+                        </section>
+                    </header>
+
+                    <section class="docs-section" id="item-6-1">
+                        <h2 class="section-heading">How it works</h2>
+                        <p>Moderation has it's own route and permissions separated from the users permissions</p>
+                        <p>the routes are created to be more detailed and give all informations available about specific
+                            model in the system</p>
+
+                        <h5>Users</h5>
+                        <p>For users moderation you will be able to list all users and edit them, you will also be able
+                            to assign specific
+                            permissions to any user and change their profile pictures</p>
+                        <p>Moderation will also allows you to delete and create new users</p>
+                        <h5>Files</h5>
+                        <p>For files moderation you will be able to list all files uploaded to the system, you will also
+                            be able to delete and download them</p>
+                        <h5>Backup</h5>
+                        <p>For the backup moderation you will be able to download encrypted backup and restore it </p>
+
+                    </section>
+
+
+                    <section class="docs-section" id="item-6-2">
+                        <h2 class="section-heading">Users Moderation</h2>
+                        <br><br>
+                        <h3>Get all users</h3>
+                        <p>to get list of all users you need to send a get request to the route</p>
+                        <code>/mod/users</code>
+                        <br><br>
+                        <p>This will return all users, no query reqiured except when you do pagination you need to pass
+                            ( page, limit,
+                            sort, order ) <br>page and limit are required otherwise you will get the default limits
+                            assigned in the .env file</p>
+
+                        <p><b>Sort query will accept these values</b></p>
+                        <ul>
+                            <li>createdAt</li>
+                            <li>updatedAt</li>
+                            <li>username</li>
+                        </ul>
+                        <p><b>Order query will accept these values</b></p>
+                        <ul>
+                            <li>asc</li>
+                            <li>desc</li>
+                        </ul>
+
+                        <p><b>Example call</b></p>
+                        <code>/mod/users?page=1&limit=15&sort=createdAt&order=desc</code>
+
+
+
+
+
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                        <h3>Update users</h3>
+                        <p>to update a specific user you need to send a put request with the updated details to the
+                            route </p>
+                        <code>/mod/update-user/{userId}</code>
+                        <br><br>
+                        <p>where the {userId} is the id of the user you want to update</p>
+                        <p>You can also submit the extra field for that user and it will be created automatically, or if
+                            that field exists for that user
+                            then it will be updated.
+                        </p>
+
+
+
+
+
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                        <h3>Create users</h3>
+                        <p>Submit the new user details as a post request to the route</p>
+                        <code>/mod/create-user</code>
+                        <br><br>
+                        <p>some fields are required: </p>
+                        <ul>
+                            <li>name</li>
+                            <li>email</li>
+                            <li>password</li>
+                        </ul>
+                        <p>You can also submit the extra field for that user and it will be created automatically</p>
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                        <h3>Banned users</h3>
+                        <p>to banned a user, this means they won't be able to login</p>
+                        <p>to do so, you need to send a put request to the route</p>
+                        <code>/mod/ban-user/{userId}</code>
+                        <br><br>
+                        <p>where the {userId} is the id of the user you want to banned</p>
+
+
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                        <h3>Delete users</h3>
+                        <p>to delete a user, you need to send a delete request to the route</p>
+                        <code>/mod/delete-user/{userId}</code>
+                        <br><br>
+                        <p>where the {userId} is the id of the user you want to delete</p>
+
+                    </section>
+
+
+                    <section class="docs-section" id="item-6-3">
+                        <h2 class="section-heading">Files Moderation</h2>
+                        <br><br>
+                        <h3>Get all files</h3>
+                        <p>to get all files, send a get request to the route</p>
+                        <code>/mod/files</code>
+                        <br><br>
+                        <p>This will return all the files, no query reqiured except when you do pagination you need to
+                            pass
+                            ( page, limit,
+                            sort, order ) <br>page and limit are required otherwise you will get the default limits
+                            assigned in the .env file</p>
+
+                        <p><b>Sort query will accept these values</b></p>
+                        <ul>
+                            <li>createdAt</li>
+                            <li>updatedAt</li>
+                            <li>mimetype</li>
+                            <li>uploadedBy</li>
+                        </ul>
+                        <p><b>Order query will accept these values</b></p>
+                        <ul>
+                            <li>asc</li>
+                            <li>desc</li>
+                        </ul>
+
+                        <p><b>Example call</b></p>
+                        <code>/mod/files?page=1&limit=15&sort=createdAt&uploadedBy=8a8sa89898897iojjads</code>
+
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                        <h3>Delete files</h3>
+                        <p>to delete a file, you need to send a delete request to the route</p>
+                        <code>/mod/delete-file/{fileId}</code>
+                        <br><br>
+                        <p>where the {fileId} is the id of the file you want to delete</p>
+
+                    </section>
+
+
+
+
+                    <section class="docs-section" id="item-6-23">
+                        <h2 class="section-heading">Backup and Restore Moderation</h2>
+                        <br><br>
+                        <h3>Create a backup</h3>
+                        <p>to create a new backup, send a get request to the route</p>
+                        <code>/mod/backup</code>
+                        <br><br>
+                        <p>This will return an encrypted downloadable json file</p>
+
+                        <br>
+                        <br>
+                        <hr>
+                        <br>
+                        <h3>Restore Backup</h3>
+                        <p>to restore backup from json file, you need to send a post request to the route</p>
+                        <code>/mod/restore</code>
+                        <br><br>
+                        <p>When submitting the json file, it should be encrypted with same encryption method and key
+                            that is created with.</p>
+                        <p>to submit it you need to send it as a file name "restore"</p>
+
+                    </section>
+
+                </article>
+
+
+                <footer class="footer">
+                    <div class="container text-center py-5">
+                        <small class="copyright">
+                            Nodejs Starter Server Built and developed by <a class="theme-link"
+                                href="https://github.com/YousefAlsbaihi/" target="_blank">Yousef</a>
+                            <br><br>
+                            Documentation template Designed by
+                            <a class="theme-link" href="http://themes.3rdwavemedia.com"
+                                target="_blank">XiaoyingRiley</a></small>
+
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+    <!--docs-wrapper-->
+
+    <!-- Modal -->
+    <div class="modal fade" id="changelogModal" tabindex="-1" aria-labelledby="changelogModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title px-3 py-1" id="changelogModalLabel">Changelog</h4>
+                    <button type="button" class="btn-close p-4" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-12">
+                                <h6 class="mt-3"> <span class="p-2"> Version 1.0.0</span> - 06/29/2024</h6>
+                                <ul class="mt-3 mb-5">
+                                    <li class="ms-3">Init. stable release</li>
+                                </ul>
+                            </div>
+                            <!--end col-->
+                        </div>
+                        <!--end row-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+
+
+
+
+</body>
+
+</html>
